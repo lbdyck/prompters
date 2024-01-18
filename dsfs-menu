@@ -1,0 +1,79 @@
+#!/bin/sh
+clear
+
+gum style \
+        --foreground 226 --border-foreground 226 --border double \
+        --align center --width 50 --margin "1 2" --padding "2 4" \
+        'z/OS Open Tools dsfs User Menu'
+
+export TERM=xterm-256color
+
+export GUM_INPUT_CURSOR_FOREGROUND="200"
+export GUM_INPUT_PROMPT_FOREGROUND="200"
+export GUM_IMPORT_PROMPT="* "
+
+SEL=$(gum choose "createparm" "fileinfo" "fsinfo" "help" "query" "configquery" --header "Select DSFS Action:" --header.bold)
+case "$SEL" in
+  createparm)
+    echo "Selected" $SEL
+    UID=$(id -u -n)
+    HLQ=$(gum input --header=" HLQ to create - must be at least 2 qualifiers:" --header.bold)
+    if [[ $HLQ != *.* ]]; then
+	echo 'HLQ must have multiple qualifiers.'
+	exit 0
+    fi
+    THLQ=$(echo "$HLQ" | tr '[:lower:]' '[:upper:]')
+    if [[ ! "$THLQ" == "$UID"* ]]; then
+       echo 'HLQ does NOT match your userid as it must - try again.'
+       exit 0
+    fi
+    HLQ=$(echo $HLQ | tr '[:upper:]' '[:lower:]') 
+    TYPE=$(gum choose "txt" "bin" "rec" --header "Select DSFS type:" --header.bold)
+    DSORG=$(gum choose "PS" "PO" --header "Select dataset model type:")
+
+    if [ "$DSORG" = "PO" ]; then
+       DSORG="dsorg(po) dsntype(liberary)"
+       MODEL="-pdsmodel"
+    elif [ "$DSORG" = "PS" ]; then
+       DSORG="dsorg(ps)"
+       MODEL="-psmodel"
+    fi
+
+    LRECL=$(gum input --header "Enter the LRECL for the model")
+    BLKSZ=$(gum input --header "Enter the Blocksize for the model")
+    RECFM=$(gum choose "FB" "VB" --header "Select Record Format:")
+
+    SPACE=$(gum choose "cyl" "trk" --header.bold --header "Enter Allocation Type:")
+    PRIM=$(gum input --header.bold --header "Enter Primary Space Quantity:")
+    SEC=$(gum input  --header.bold --header "Enter Secondary Space Quantity:")
+
+    CMD="dsadm createparm -path /dsfs/$TYPE/$UID $MODEL $DSORG recfm($RECFM) $LRECL $BLKSZ $SPACE space($PRIM,$SEC)"
+    echo "cmd:" $CMD
+   cmd 
+   ;;	
+  fileinfo)
+    HLQ=$(gum input --header "Enter HLQ to report on")
+    TYPE=$(gum choose "txt" "bin" "rec" --header "Select DSFS type:" --header "Enter the dsfs type:")
+    dsadm fileinfo -path /dsfs/$TYPE/$HLQ | less  # gum pager
+    ;;
+  fsinfo)
+    dsadm fsinfo | less # gum pager
+    ;;
+  help)
+    HELP=$(gum choose "config" "configquery" "createparm" "fileinfo" "fsinfo" "query" --header "Select DSFS command:")
+    dsadm help -topic $HELP | less  # gum pager
+    ;;
+  query)
+    QUERY=$(gum choose "compression" "dscache" "filecache" "iobydasd" "knpfs" "locking" "metacache" \
+              "storage" "vnodecache" --no-limit --header "Select query options:")
+     QUERY=$(echo $QUERY | sed 's/\b\(\w\)/ -\1/g')
+     dsadm query $QUERY | less # gum pager
+    ;;
+  configquery)
+    dsadm configquery -all | less  # gum pager
+    ;;
+esac
+
+if [ -z "$SEL" ]; then
+   echo 'No selection....'
+fi

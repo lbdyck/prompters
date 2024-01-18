@@ -1,0 +1,33 @@
+##!/bin/sh
+clear
+#gum style \
+#        --foreground 212 --border-foreground 212 --border double \
+#        --align center --width 50 --margin "1 2" --padding "2 4" \
+#        'z/OS Open Tools Man Viewer'
+
+gum style \
+        --foreground 39 --border-foreground 39 --border double \
+        --align center --width 50 --margin "1 2" --padding "2 4" \
+        'z/OS Open Tools Man Viewer'
+
+
+if [ "$#" -eq 0 ]; then
+    ARG=$(gum input --prompt "Enter a command for a manpage or a word to search for:" \
+    --placeholder="e.g. ssh" --value=" ")
+else
+    ARG=$1
+fi
+
+export GUM_INPUT_CURSOR_FOREGROUND="#039"     # FF0
+export GUM_INPUT_PROMPT_FOREGROUND="#039"     # 0FF 
+
+echo "Select the man page to view:"
+MAN=$(man -k $ARG | cut -d" " -f1,3- | gum choose)
+MAN=$(echo $MAN | cut -d" " -f1)
+
+
+if [ -z "$MAN" ]; then
+   echo 'No Selection.'
+   else
+      man $MAN | gum pager
+fi
