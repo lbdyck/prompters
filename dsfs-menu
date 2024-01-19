@@ -49,6 +49,18 @@ case "$SEL" in
        DATAC=""
     fi
 
+    if [ -n "$MGMTC" ]; then
+       MGMTC="mgmtclas("$MGMTC")"
+       else
+       MGMTC=""
+    fi
+
+    if [ -n "$STORC" ]; then
+       STORC="storclas("$STORC")"
+       else
+       STORC=""
+    fi
+
     LRECL=$(gum input --header "Enter the LRECL for the model")
     BLKSZ=$(gum input --header "Enter the Blocksize for the model")
     RECFM=$(gum choose "FB" "VB" --header "Select Record Format:")
