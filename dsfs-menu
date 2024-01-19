@@ -1,12 +1,13 @@
 #!/bin/sh
 clear
 
+export TERM=xterm-256color
+
 gum style \
         --foreground 226 --border-foreground 226 --border double \
         --align center --width 50 --margin "1 2" --padding "2 4" \
         'z/OS Open Tools dsfs User Menu'
 
-export TERM=xterm-256color
 
 export GUM_INPUT_CURSOR_FOREGROUND="200"
 export GUM_INPUT_PROMPT_FOREGROUND="200"
