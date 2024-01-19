@@ -1,15 +1,9 @@
-##!/bin/sh
+#!/bin/sh
 clear
-#gum style \
-#        --foreground 212 --border-foreground 212 --border double \
-#        --align center --width 50 --margin "1 2" --padding "2 4" \
-#        'z/OS Open Tools Man Viewer'
-
 gum style \
-        --foreground 39 --border-foreground 39 --border double \
+        --foreground 212 --border-foreground 212 --border double \
         --align center --width 50 --margin "1 2" --padding "2 4" \
         'z/OS Open Tools Man Viewer'
-
 
 if [ "$#" -eq 0 ]; then
     ARG=$(gum input --prompt "Enter a command for a manpage or a word to search for:" \
@@ -18,16 +12,19 @@ else
     ARG=$1
 fi
 
-export GUM_INPUT_CURSOR_FOREGROUND="#039"     # FF0
-export GUM_INPUT_PROMPT_FOREGROUND="#039"     # 0FF 
+export GUM_INPUT_CURSOR_FOREGROUND="#FF0"
+export GUM_INPUT_PROMPT_FOREGROUND="#0FF"
+export TERM=xterm-256color
 
 echo "Select the man page to view:"
-MAN=$(man -k $ARG | cut -d" " -f1,3- | gum choose)
+# MAN=$(man -k $ARG | cut -d" " -f1,3- | tail -n +2 | gum choose)
+MAN=$(gum choose $(man -k $ARG | cut -d" " -f1 | tail -n +2))
 MAN=$(echo $MAN | cut -d" " -f1)
 
 
 if [ -z "$MAN" ]; then
    echo 'No Selection.'
    else
-      man $MAN | gum pager
+      man $MAN | less # gum pager
 fi
+
