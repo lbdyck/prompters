@@ -17,7 +17,7 @@ case "$SEL" in
   createparm)
     echo "Selected" $SEL
     UID=$(id -u -n)
-    HLQ=$(gum input --header=" HLQ to create - must be at least 2 qualifiers:" --header.bold)
+    HLQ=$(gum input --header=" HLQ to create - must be at least 2 qualifiers and the 1st must match your userid:" --header.bold)
     if [[ $HLQ != *.* ]]; then
 	echo 'HLQ must have multiple qualifiers.'
 	exit 0
@@ -39,6 +39,16 @@ case "$SEL" in
        MODEL="-psmodel"
     fi
 
+    DATAC=$(gum input --width 8 --prompt "SMS Data Class:")
+    MGMTC=$(gum input --width 8 --prompt "SMS Management Class:")
+    STORC=$(gum input --width 8 --prompt "SMS Storage Class:")
+
+    if [ -n "$DATAC" ]; then
+       DATAC="dataclas("$DATAC")"
+       else
+       DATAC=""
+    fi
+
     LRECL=$(gum input --header "Enter the LRECL for the model")
     BLKSZ=$(gum input --header "Enter the Blocksize for the model")
     RECFM=$(gum choose "FB" "VB" --header "Select Record Format:")
@@ -48,8 +58,10 @@ case "$SEL" in
     SEC=$(gum input  --header.bold --header "Enter Secondary Space Quantity:")
 
     CMD="dsadm createparm -path /dsfs/$TYPE/$UID $MODEL $DSORG recfm($RECFM) $LRECL $BLKSZ $SPACE space($PRIM,$SEC)"
+    CMD="$CMD $DATAC $MGMTC $STORC"
+echo "CreateParm is still experimental so does not really work yet"
     echo "cmd:" $CMD
-   cmd 
+#   cmd 
    ;;	
   fileinfo)
     HLQ=$(gum input --header "Enter HLQ to report on")
