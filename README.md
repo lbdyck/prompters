@@ -17,6 +17,7 @@ The z/OS port of `gum` can be found here https://github.com/ZOSOpenTools.
 ### Notes:
 
 1. While I would like to use `gum pager` I found that the z/OS port of `pager` didn't work so for now these use `less` which does work.
+2. The use of `more` is also a valid pager.
 
 ## dsfs-menu
 
