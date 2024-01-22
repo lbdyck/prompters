@@ -1,6 +1,6 @@
 #!/bin/sh
 clear
-VER="0.02"
+VER="0.03"
 
 #----------------------------------------------------------------#
 # Name: mantastic                                                #
@@ -8,12 +8,15 @@ VER="0.02"
 # Purpose: Provide the shell user with an easy to use prompt     #
 #          to find and display man pages.                        #
 #                                                                #
-# Dependencies:  gum or less                                     #
+# Dependencies:  gum or less or more                             #
 #                                                                #
-# Author (or whom to blame for this)                             #
+# Platforms:     Any shell where less or gum are installed       #
+#                                                                #
+# Author/Contributors (or whom to blame for this)                #
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
 #                                                                #
 # Change History (top down):                                     #
+#    2024/01/22 LBD - 0.03 add comment about more                #
 #    2024/01/22 LBD - 0.02 add comments and generalize pager     #
 #    2024/01/08 LBD - 0.00 creation                              #
 #                                                                #
@@ -23,9 +26,10 @@ VER="0.02"
 # Comment and uncomment to define which pager to use for viewing #
 #--------------------------------------------------------------=-#
 # PAGER="gum pager"
+# PAGER="more"
 PAGER="less"
 
-export TERM=xerm-256color
+export TERM=xterm-256color
 
 gum style \
         --foreground 212 --border-foreground 212 --border double \

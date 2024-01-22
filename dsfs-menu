@@ -10,12 +10,13 @@ VER="0.02"
 #          dsfs dsadm command to help the average user find      #
 #          and use these commands.                               #
 #                                                                #
-# Dependencies:  gum or less                                     #
+# Dependencies:  gum or less or more                             #
 #                                                                #
-# Author (or whom to blame for this)                             #
+# Author/Contributors (or whom to blame for this)                #
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
 #                                                                #
 # Change History (top down):                                     #
+#    2024/01/22 LBD - 0.03 add comment about more as an option   #
 #    2024/01/22 LBD - 0.02 add comments and generalize pager     #
 #    2024/01/08 LBD - 0.00 creation                              #
 #                                                                #
@@ -25,6 +26,7 @@ VER="0.02"
 # Comment and uncomment to define which pager to use for viewing #
 #--------------------------------------------------------------=-#
 # PAGER="gum pager"
+# PAGER="more"
 PAGER="less"
 
 export TERM=xterm-256color
