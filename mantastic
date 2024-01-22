@@ -1,6 +1,29 @@
 #!/bin/sh
 clear
-VER="0.01"
+VER="0.02"
+
+#----------------------------------------------------------------#
+# Name: mantastic                                                #
+#                                                                #
+# Purpose: Provide the shell user with an easy to use prompt     #
+#          to find and display man pages.                        #
+#                                                                #
+# Dependencies:  gum or less                                     #
+#                                                                #
+# Author (or whom to blame for this)                             #
+#   Lionel B. Dyck (lbdyck@gmail.com)                            #
+#                                                                #
+# Change History (top down):                                     #
+#    2024/01/22 LBD - 0.02 add comments and generalize pager     #
+#    2024/01/08 LBD - 0.00 creation                              #
+#                                                                #
+#--------------------------------------------------------------=-#
+
+#-------------------------------------------------------------=--#
+# Comment and uncomment to define which pager to use for viewing #
+#--------------------------------------------------------------=-#
+# PAGER="gum pager"
+PAGER="less"
 
 export TERM=xerm-256color
 
@@ -25,10 +48,9 @@ echo "Select the man page to view:"
 MAN=$(gum choose $(man -k $ARG | cut -d" " -f1 | tail -n +2))
 MAN=$(echo $MAN | cut -d" " -f1)
 
-
 if [ -z "$MAN" ]; then
    echo 'No Selection.'
    else
-      man $MAN | less # gum pager
+      man $MAN | $PAGER
 fi
 

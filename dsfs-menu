@@ -1,16 +1,31 @@
 #!/bin/sh
 clear
 
-##########################################################################################
-#  dsfs-menu                                                                             #
-#                                                                                        #
-#  A simple to use (hopefully) prompting menu for the dsfs dsadm command to help the     #
-#  average user find and use these commands.                                             #
-#                                                                                        #
-#                                                                                        #
-##########################################################################################
-
 VER="0.02"
+
+#----------------------------------------------------------------#
+# Name: dsfs-menu                                                #
+#                                                                #
+# Purpose: A simple to use (hopefully) prompting menu for the    #
+#          dsfs dsadm command to help the average user find      #
+#          and use these commands.                               #
+#                                                                #
+# Dependencies:  gum or less                                     #
+#                                                                #
+# Author (or whom to blame for this)                             #
+#   Lionel B. Dyck (lbdyck@gmail.com)                            #
+#                                                                #
+# Change History (top down):                                     #
+#    2024/01/22 LBD - 0.02 add comments and generalize pager     #
+#    2024/01/08 LBD - 0.00 creation                              #
+#                                                                #
+#--------------------------------------------------------------=-#
+
+#-------------------------------------------------------------=--#
+# Comment and uncomment to define which pager to use for viewing #
+#--------------------------------------------------------------=-#
+# PAGER="gum pager"
+PAGER="less"
 
 export TERM=xterm-256color
 
@@ -109,7 +124,7 @@ echo "CreateParm is still experimental so does not really work yet"
     ;;
 esac
 
-$CMD | less     # gum pager
+$CMD | $PAGER
 
 if [ -z "$SEL" ]; then
    echo 'No selection....'
