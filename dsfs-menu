@@ -1,12 +1,23 @@
 #!/bin/sh
 clear
 
+##########################################################################################
+#  dsfs-menu                                                                             #
+#                                                                                        #
+#  A simple to use (hopefully) prompting menu for the dsfs dsadm command to help the     #
+#  average user find and use these commands.                                             #
+#                                                                                        #
+#                                                                                        #
+##########################################################################################
+
+VER="0.02"
+
 export TERM=xterm-256color
 
 gum style \
         --foreground 226 --border-foreground 226 --border double \
         --align center --width 50 --margin "1 2" --padding "2 4" \
-        'z/OS Open Tools dsfs User Menu'
+        'z/OS Open Tools dsfs User Menu' $VER
 
 
 export GUM_INPUT_CURSOR_FOREGROUND="200"
@@ -20,15 +31,15 @@ case "$SEL" in
     UID=$(id -u -n)
     HLQ=$(gum input --header=" HLQ to create - must be at least 2 qualifiers and the 1st must match your userid:" --header.bold)
     if [[ $HLQ != *.* ]]; then
-	echo 'HLQ must have multiple qualifiers.'
-	exit 0
+       echo 'HLQ must have multiple qualifiers.'                                                                                                                                                                                                              @
+       exit 0                                                                                                                                                                                                                                                 @
     fi
     THLQ=$(echo "$HLQ" | tr '[:lower:]' '[:upper:]')
     if [[ ! "$THLQ" == "$UID"* ]]; then
        echo 'HLQ does NOT match your userid as it must - try again.'
        exit 0
     fi
-    HLQ=$(echo $HLQ | tr '[:upper:]' '[:lower:]') 
+    HLQ=$(echo $HLQ | tr '[:upper:]' '[:lower:]')
     TYPE=$(gum choose "txt" "bin" "rec" --header "Select DSFS type:" --header.bold)
     DSORG=$(gum choose "PS" "PO" --header "Select dataset model type:")
 
@@ -74,31 +85,33 @@ case "$SEL" in
     CMD="$CMD $DATAC $MGMTC $STORC"
 echo "CreateParm is still experimental so does not really work yet"
     echo "cmd:" $CMD
-#   cmd 
-   ;;	
+    ;;
   fileinfo)
     HLQ=$(gum input --header "Enter HLQ to report on")
     TYPE=$(gum choose "txt" "bin" "rec" --header "Select DSFS type:" --header "Enter the dsfs type:")
-    dsadm fileinfo -path /dsfs/$TYPE/$HLQ | less  # gum pager
+    CMD="dsadm fileinfo -path /dsfs/$TYPE/$HLQ"
     ;;
   fsinfo)
-    dsadm fsinfo | less # gum pager
+    CMD="dsadm fsinfo"
     ;;
   help)
     HELP=$(gum choose "config" "configquery" "createparm" "fileinfo" "fsinfo" "query" --header "Select DSFS command:")
-    dsadm help -topic $HELP | less  # gum pager
+    CMD="dsadm help -topic $HELP"
     ;;
   query)
     QUERY=$(gum choose "compression" "dscache" "filecache" "iobydasd" "knpfs" "locking" "metacache" \
               "storage" "vnodecache" --no-limit --header "Select query options:")
-     QUERY=$(echo $QUERY | sed 's/\b\(\w\)/ -\1/g')
-     dsadm query $QUERY | less # gum pager
+    QUERY=$(echo $QUERY | sed 's/\b\(\w\)/ -\1/g')
+    CMD="dsadm query $QUERY"
     ;;
   configquery)
-    dsadm configquery -all | less  # gum pager
+    CMD="dsadm configquery -all"
     ;;
 esac
+
+$CMD | less     # gum pager
 
 if [ -z "$SEL" ]; then
    echo 'No selection....'
 fi
+
