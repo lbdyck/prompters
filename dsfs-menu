@@ -1,7 +1,7 @@
 #!/bin/sh
 clear
 
-VER="0.03"
+VER="0.031"
 
 #----------------------------------------------------------------#
 # Name: dsfs-menu                                                #
@@ -16,6 +16,7 @@ VER="0.03"
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
 #                                                                #
 # Change History (top down):                                     #
+#    2024/01/25 LBD - 0.031 more cleanup                         #
 #    2024/01/22 LBD - 0.03 add comment about more as an option   #
 #                   -      improve colors and prompting          #
 #    2024/01/22 LBD - 0.02 add comments and generalize pager     #
@@ -26,28 +27,30 @@ VER="0.03"
 #-------------------------------------------------------------=--#
 # Comment and uncomment to define which pager to use for viewing #
 #--------------------------------------------------------------=-#
-# PAGER="gum pager"
+PAGER="gum pager"
 # PAGER="more"
-PAGER="less"
+# PAGER="less"
 
 export TERM=xterm-256color
 
 gum style \
-        --foreground 226 --border-foreground 226 --border double \
+        --foreground 10 --border-foreground 10 --border double \
         --align center --width 50 --margin "1 2" --padding "2 4" \
         'z/OS Open Tools dsfs User Menu' $VER
 
-export GUM_INPUT_CURSOR_FOREGROUND="#200"
-export GUM_INPUT_PROMPT_FOREGROUND="#200"
+export GUM_INPUT_CURSOR_FOREGROUND="#11"
+export GUM_INPUT_PROMPT_FOREGROUND="#11"
+export GUM_INPUT_PLACEHOLDER=". . ."
 export GUM_IMPORT_PROMPT="* "
 
-SEL=$(gum choose "createparm" "fileinfo" "fsinfo" "help" "query" "configquery" --header "Select DSFS Action:" --header.foreground="200")
+SEL=$(gum choose "createparm" "fileinfo" "fsinfo" "help" "query" "configquery" --header "Select DSFS Action:" \
+     --header.foreground="11")
 case "$SEL" in
   createparm)
     echo "Selected" $SEL
     UID=$(id -u -n)
     HLQ=$(gum input --header=" HLQ to create - must be at least 2 qualifiers and the 1st must match your userid:" \
-        --header.foreground="200" --placeholder="Enter HLQ")
+        --header.foreground="11" --placeholder="Enter HLQ" )
     if [[ $HLQ != *.* ]]; then
        echo 'HLQ must have multiple qualifiers.'
        exit 0
@@ -58,8 +61,8 @@ case "$SEL" in
        exit 0
     fi
     HLQ=$(echo $HLQ | tr '[:upper:]' '[:lower:]')
-    TYPE=$(gum choose "txt" "bin" "rec" --header "Select DSFS type:" --header.foreground="200")
-    DSORG=$(gum choose "PS" "PO" --header "Select dataset model type:" --header.foreground="200")
+    TYPE=$(gum choose "txt" "bin" "rec" --header "Select DSFS type:" --header.foreground="11")
+    DSORG=$(gum choose "PS" "PO" --header "Select dataset model type:" --header.foreground="11")
 
     if [ "$DSORG" = "PO" ]; then
        DSORG="dsorg(po) dsntype(liberary)"
@@ -69,9 +72,9 @@ case "$SEL" in
        MODEL="-psmodel"
     fi
 
-    DATAC=$(gum input --width 8 --prompt "SMS Data Class:" --header.foreground="200")
-    MGMTC=$(gum input --width 8 --prompt "SMS Management Class:" --header.foreground="200")
-    STORC=$(gum input --width 8 --prompt "SMS Storage Class:" --header.foreground="200")
+    DATAC=$(gum input --width 8 --header "SMS Data Class:" --header.foreground="11")
+    MGMTC=$(gum input --width 8 --header "SMS Management Class:" --header.foreground="11")
+    STORC=$(gum input --width 8 --header "SMS Storage Class:" --header.foreground="11")
 
     if [ -n "$DATAC" ]; then
        DATAC="dataclas("$DATAC")"
@@ -91,34 +94,36 @@ case "$SEL" in
        STORC=""
     fi
 
-    LRECL=$(gum input --header "Enter the LRECL for the model")
-    BLKSZ=$(gum input --header "Enter the Blocksize for the model")
-    RECFM=$(gum choose "FB" "VB" --header "Select Record Format:")
+    LRECL=$(gum input --header "Enter the LRECL for the model" --header.foreground="11")
+    BLKSZ=$(gum input --header "Enter the Blocksize for the model" --header.foreground="11")
+    RECFM=$(gum choose "F" "V" --header "Select Record Format:" --header.foreground="11")
 
-    SPACE=$(gum choose "cyl" "trk" --header.foreground="200" --header "Enter Allocation Type:")
-    PRIM=$(gum input --header.foreground="200" --header "Enter Primary Space Quantity:")
-    SEC=$(gum input  --header.foreground="200" --header "Enter Secondary Space Quantity:")
+    SPACE=$(gum choose "cyl" "trk" --header.foreground="11" --header "Enter Allocation Type:")
+    PRIM=$(gum input --header.foreground="11" --header "Enter Primary Space Quantity:")
+    SEC=$(gum input  --header.foreground="11" --header "Enter Secondary Space Quantity:")
 
-    CMD="dsadm createparm -path /dsfs/$TYPE/$UID $MODEL $DSORG recfm($RECFM) $LRECL $BLKSZ $SPACE space($PRIM,$SEC)"
+    CMD="dsadm createparm -path /dsfs/$TYPE/$UID $MODEL $DSORG \
+         recfm($RECFM) lrecl($LRECL) blksize($BLKSZ) $SPACE space($PRIM,$SEC)" 
+
     CMD="$CMD $DATAC $MGMTC $STORC"
-echo "CreateParm is still experimental so does not really work yet"
-    echo "cmd:" $CMD
     ;;
   fileinfo)
-    HLQ=$(gum input --header "Enter HLQ to report on")
-    TYPE=$(gum choose "txt" "bin" "rec" --header "Select DSFS type:" --header "Enter the dsfs type:")
+    HLQ=$(gum input --header "Enter HLQ to report on" --header.foreground="11")
+    TYPE=$(gum choose "txt" "bin" "rec" --header "Select DSFS type:" --header "Enter the dsfs type:" \
+         --header.foreground="11")
     CMD="dsadm fileinfo -path /dsfs/$TYPE/$HLQ"
     ;;
   fsinfo)
     CMD="dsadm fsinfo"
     ;;
   help)
-    HELP=$(gum choose "config" "configquery" "createparm" "fileinfo" "fsinfo" "query" --header "Select DSFS command:")
+    HELP=$(gum choose "config" "configquery" "createparm" "fileinfo" "fsinfo" "query" --header "Select DSFS command:" \
+         --header.foreground="11")
     CMD="dsadm help -topic $HELP"
     ;;
   query)
     QUERY=$(gum choose "compression" "dscache" "filecache" "iobydasd" "knpfs" "locking" "metacache" \
-              "storage" "vnodecache" --no-limit --header "Select query options:")
+              "storage" "vnodecache" --no-limit --header "Select query options:" --header.foreground="11")
     QUERY=$(echo $QUERY | sed 's/\b\(\w\)/ -\1/g')
     CMD="dsadm query $QUERY"
     ;;
@@ -133,3 +138,4 @@ if [ -z "$SEL" ]; then
    echo 'No selection....'
 fi
 
+echo $CMD

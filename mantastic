@@ -25,9 +25,9 @@ VER="0.03"
 #-------------------------------------------------------------=--#
 # Comment and uncomment to define which pager to use for viewing #
 #--------------------------------------------------------------=-#
-# PAGER="gum pager"
+PAGER="gum pager"
 # PAGER="more"
-PAGER="less"
+# PAGER="less"
 
 export TERM=xterm-256color
 
