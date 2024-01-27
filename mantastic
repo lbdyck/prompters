@@ -1,6 +1,6 @@
 #!/bin/sh
 clear
-VER="0.03"
+VER="0.04"
 
 #----------------------------------------------------------------#
 # Name: mantastic                                                #
@@ -16,6 +16,7 @@ VER="0.03"
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
 #                                                                #
 # Change History (top down):                                     #
+#    2024/01/27 LBD - 0.04 Cleanup color and usage               #
 #    2024/01/22 LBD - 0.03 add comment about more                #
 #    2024/01/22 LBD - 0.02 add comments and generalize pager     #
 #    2024/01/08 LBD - 0.00 creation                              #
@@ -29,10 +30,12 @@ PAGER="gum pager"
 # PAGER="more"
 # PAGER="less"
 
+export GUM_INPUT_CURSOR_FOREGROUND="#011"
+export GUM_INPUT_PROMPT_FOREGROUND="#011"
 export TERM=xterm-256color
 
 gum style \
-        --foreground 212 --border-foreground 212 --border double \
+        --foreground 5 --border-foreground 5 --border double \
         --align center --width 50 --margin "1 2" --padding "2 4" \
         'z/OS Open Tools Man Viewer' $VER
 
@@ -43,13 +46,8 @@ else
     ARG=$1
 fi
 
-export GUM_INPUT_CURSOR_FOREGROUND="#FF0"
-export GUM_INPUT_PROMPT_FOREGROUND="#0FF"
-export TERM=xterm-256color
-
-echo "Select the man page to view:"
-# MAN=$(man -k $ARG | cut -d" " -f1,3- | tail -n +2 | gum choose)
-MAN=$(gum choose $(man -k $ARG | cut -d" " -f1 | tail -n +2))
+MAN=$(gum choose $(man -k $ARG | cut -d" " -f1 | tail -n +2) \
+  --header "Select Man Page to View" --header.foreground="11")
 MAN=$(echo $MAN | cut -d" " -f1)
 
 if [ -z "$MAN" ]; then

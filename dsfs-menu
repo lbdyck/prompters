@@ -1,7 +1,7 @@
 #!/bin/sh
 clear
 
-VER="0.031"
+VER="0.032"
 
 #----------------------------------------------------------------#
 # Name: dsfs-menu                                                #
@@ -16,6 +16,8 @@ VER="0.031"
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
 #                                                                #
 # Change History (top down):                                     #
+#    2024/01/27 LBD - 0.032 Fix createparm quotes                #
+#                           and default SEC to PRIM if blank     #
 #    2024/01/25 LBD - 0.031 more cleanup                         #
 #    2024/01/22 LBD - 0.03 add comment about more as an option   #
 #                   -      improve colors and prompting          #
@@ -77,65 +79,60 @@ case "$SEL" in
     STORC=$(gum input --width 8 --header "SMS Storage Class:" --header.foreground="11")
 
     if [ -n "$DATAC" ]; then
-       DATAC="dataclas("$DATAC")"
-       else
-       DATAC=""
+       DSORG="$DSORG dataclas("$DATAC")"
     fi
 
     if [ -n "$MGMTC" ]; then
-       MGMTC="mgmtclas("$MGMTC")"
-       else
-       MGMTC=""
+       DSORG="$DSORG mgmtclas("$MGMTC")"
     fi
 
     if [ -n "$STORC" ]; then
-       STORC="storclas("$STORC")"
-       else
-       STORC=""
+       DSORG="$DSORG storclas("$STORC")"
     fi
 
     LRECL=$(gum input --header "Enter the LRECL for the model" --header.foreground="11")
     BLKSZ=$(gum input --header "Enter the Blocksize for the model" --header.foreground="11")
-    RECFM=$(gum choose "F" "V" --header "Select Record Format:" --header.foreground="11")
+    RECFM=$(gum choose "FB" "VB" --header "Select Record Format:" --header.foreground="11")
 
-    SPACE=$(gum choose "cyl" "trk" --header.foreground="11" --header "Enter Allocation Type:")
+    SPACE=$(gum choose "cyl" "tracks" --header.foreground="11" --header "Enter Allocation Type:")
     PRIM=$(gum input --header.foreground="11" --header "Enter Primary Space Quantity:")
     SEC=$(gum input  --header.foreground="11" --header "Enter Secondary Space Quantity:")
 
-    CMD="dsadm createparm -path /dsfs/$TYPE/$UID $MODEL $DSORG \
-         recfm($RECFM) lrecl($LRECL) blksize($BLKSZ) $SPACE space($PRIM,$SEC)" 
+    if [ -z "$SEC" ]; then
+       SEC=$PRIM
+    fi
 
-    CMD="$CMD $DATAC $MGMTC $STORC"
+echo  dsadm createparm -path /dsfs/$TYPE/$HLQ $MODEL \
+        '"'"$DSORG recfm($RECFM) lrecl($LRECL) blksize($BLKSZ) $SPACE space($PRIM,$SEC)"'"'
+  dsadm createparm -path /dsfs/"$TYPE"/"$HLQ" "$MODEL" \
+        '"'"$DSORG recfm($RECFM) lrecl($LRECL) blksize($BLKSZ) $SPACE space($PRIM,$SEC)"'"'
     ;;
+
   fileinfo)
     HLQ=$(gum input --header "Enter HLQ to report on" --header.foreground="11")
     TYPE=$(gum choose "txt" "bin" "rec" --header "Select DSFS type:" --header "Enter the dsfs type:" \
          --header.foreground="11")
-    CMD="dsadm fileinfo -path /dsfs/$TYPE/$HLQ"
+    dsadm fileinfo -path /dsfs/$TYPE/$HLQ | $PAGER
     ;;
   fsinfo)
-    CMD="dsadm fsinfo"
+    dsadm fsinfo | $PAGER
     ;;
   help)
     HELP=$(gum choose "config" "configquery" "createparm" "fileinfo" "fsinfo" "query" --header "Select DSFS command:" \
          --header.foreground="11")
-    CMD="dsadm help -topic $HELP"
+    dsadm help -topic $HELP | $PAGER
     ;;
   query)
     QUERY=$(gum choose "compression" "dscache" "filecache" "iobydasd" "knpfs" "locking" "metacache" \
               "storage" "vnodecache" --no-limit --header "Select query options:" --header.foreground="11")
     QUERY=$(echo $QUERY | sed 's/\b\(\w\)/ -\1/g')
-    CMD="dsadm query $QUERY"
+    dsadm query $QUERY | $PAGER
     ;;
   configquery)
-    CMD="dsadm configquery -all"
+    dsadm configquery -all | $PAGER
     ;;
 esac
-
-$CMD | $PAGER
 
 if [ -z "$SEL" ]; then
    echo 'No selection....'
 fi
-
-echo $CMD
