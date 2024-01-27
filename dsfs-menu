@@ -74,6 +74,18 @@ case "$SEL" in
        MODEL="-psmodel"
     fi
 
+    RECFM=$(gum choose "FB" "VB" --header "Select Record Format:" --header.foreground="11")
+    LRECL=$(gum input --header "Enter the LRECL for the model" --header.foreground="11")
+    BLKSZ=$(gum input --header "Enter the Blocksize for the model" --header.foreground="11")
+
+    SPACE=$(gum choose "cyl" "tracks" --header.foreground="11" --header "Enter Allocation Type:")
+    PRIM=$(gum input --header.foreground="11" --header "Enter Primary Space Quantity:")
+    SEC=$(gum input  --header.foreground="11" --header "Enter Secondary Space Quantity:")
+
+    if [ -z "$SEC" ]; then
+       SEC=$PRIM
+    fi
+
     DATAC=$(gum input --width 8 --header "SMS Data Class:" --header.foreground="11")
     MGMTC=$(gum input --width 8 --header "SMS Management Class:" --header.foreground="11")
     STORC=$(gum input --width 8 --header "SMS Storage Class:" --header.foreground="11")
@@ -90,22 +102,11 @@ case "$SEL" in
        DSORG="$DSORG storclas("$STORC")"
     fi
 
-    LRECL=$(gum input --header "Enter the LRECL for the model" --header.foreground="11")
-    BLKSZ=$(gum input --header "Enter the Blocksize for the model" --header.foreground="11")
-    RECFM=$(gum choose "FB" "VB" --header "Select Record Format:" --header.foreground="11")
-
-    SPACE=$(gum choose "cyl" "tracks" --header.foreground="11" --header "Enter Allocation Type:")
-    PRIM=$(gum input --header.foreground="11" --header "Enter Primary Space Quantity:")
-    SEC=$(gum input  --header.foreground="11" --header "Enter Secondary Space Quantity:")
-
-    if [ -z "$SEC" ]; then
-       SEC=$PRIM
-    fi
-
 echo  dsadm createparm -path /dsfs/$TYPE/$HLQ $MODEL \
         '"'"$DSORG recfm($RECFM) lrecl($LRECL) blksize($BLKSZ) $SPACE space($PRIM,$SEC)"'"'
-  dsadm createparm -path /dsfs/"$TYPE"/"$HLQ" "$MODEL" \
-        '"'"$DSORG recfm($RECFM) lrecl($LRECL) blksize($BLKSZ) $SPACE space($PRIM,$SEC)"'"'
+ PART2="$DSORG recfm($RECFM) lrecl($LRECL) blksize($BLKSZ) $SPACE space($PRIM,$SEC)"
+echo 'Part2:' $PART2
+    dsadm createparm -path /dsfs/$TYPE/$HLQ $MODEL '"'$PART2'"'
     ;;
 
   fileinfo)
