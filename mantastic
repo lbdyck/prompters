@@ -1,6 +1,6 @@
 #!/bin/sh
 clear
-VER="0.04"
+VER="0.05"
 
 #----------------------------------------------------------------#
 # Name: mantastic                                                #
@@ -16,6 +16,7 @@ VER="0.04"
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
 #                                                                #
 # Change History (top down):                                     #
+#    2024/01/28 LBD - 0.05 Fix prompt color                      #
 #    2024/01/27 LBD - 0.04 Cleanup color and usage               #
 #    2024/01/22 LBD - 0.03 add comment about more                #
 #    2024/01/22 LBD - 0.02 add comments and generalize pager     #
@@ -30,8 +31,9 @@ PAGER="gum pager"
 # PAGER="more"
 # PAGER="less"
 
-export GUM_INPUT_CURSOR_FOREGROUND="#011"
-export GUM_INPUT_PROMPT_FOREGROUND="#011"
+export GUM_INPUT_PROMPT_FOREGROUND="#11"
+export GUM_INPUT_PLACEHOLDER=". . ."
+export GUM_IMPORT_PROMPT="* "
 export TERM=xterm-256color
 
 gum style \
@@ -41,7 +43,7 @@ gum style \
 
 if [ "$#" -eq 0 ]; then
     ARG=$(gum input --prompt "Enter a command for a manpage or a word to search for:" \
-    --placeholder="e.g. ssh" --value=" ")
+    --placeholder="e.g. ssh" --value=" " --header.foreground="11")
 else
     ARG=$1
 fi
