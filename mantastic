@@ -8,7 +8,7 @@ VER="0.07"
 # Purpose: Provide the shell user with an easy to use prompt     #
 #          to find and display man pages.                        #
 #                                                                #
-# Dependencies:  gum or less or more                             #
+# Dependencies:  gum plus less or more                           #
 #                                                                #
 # Platforms:     Any shell where less or gum are installed       #
 #                                                                #
