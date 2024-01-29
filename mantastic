@@ -1,6 +1,6 @@
 #!/bin/sh
 clear
-VER="0.05"
+VER="0.06"
 
 #----------------------------------------------------------------#
 # Name: mantastic                                                #
@@ -16,6 +16,7 @@ VER="0.05"
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
 #                                                                #
 # Change History (top down):                                     #
+#    2024/01/29 LBD - 0.06 Fix tail on man -k results            #
 #    2024/01/28 LBD - 0.05 Fix prompt color                      #
 #    2024/01/27 LBD - 0.04 Cleanup color and usage               #
 #    2024/01/22 LBD - 0.03 add comment about more                #
@@ -48,7 +49,7 @@ else
     ARG=$1
 fi
 
-MAN=$(gum choose $(man -k $ARG | cut -d" " -f1 | tail -n +2) \
+MAN=$(gum choose $(man -k $ARG | cut -d" " -f1 | tail -n +1) \
   --header "Select Man Page to View" --header.foreground="11")
 MAN=$(echo $MAN | cut -d" " -f1)
 
