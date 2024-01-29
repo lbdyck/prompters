@@ -1,6 +1,6 @@
 #!/bin/sh
 clear
-VER="0.06"
+VER="0.07"
 
 #----------------------------------------------------------------#
 # Name: mantastic                                                #
@@ -16,6 +16,7 @@ VER="0.06"
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
 #                                                                #
 # Change History (top down):                                     #
+#    2024/01/29 LBD - 0.07 Simplify color change for banner      #
 #    2024/01/29 LBD - 0.06 Fix tail on man -k results            #
 #    2024/01/28 LBD - 0.05 Fix prompt color                      #
 #    2024/01/27 LBD - 0.04 Cleanup color and usage               #
@@ -32,13 +33,23 @@ PAGER="gum pager"
 # PAGER="more"
 # PAGER="less"
 
-export GUM_INPUT_PROMPT_FOREGROUND="#12"
+#-------------------------------------------------------------=--#
+# Define the color for the banner                                #
+#  5 - purple                                                    #
+# 12 - blue shade                                                #
+# 33 - darker blue                                               #
+# 46 - green                                                     #
+# 51 - turq shade                                                #
+#--------------------------------------------------------------=-#
+COLOR=51
+
+export GUM_INPUT_PROMPT_FOREGROUND="#$COLOR"
 export GUM_INPUT_PLACEHOLDER=". . ."
 export GUM_IMPORT_PROMPT="* "
 export TERM=xterm-256color
 
 gum style \
-        --foreground 12 --border-foreground 12 --border double \
+        --foreground $COLOR --border-foreground $COLOR --border double \
         --align center --width 50 --margin "1 2" --padding "2 4" \
         'z/OS Open Tools Man Viewer' $VER
 
