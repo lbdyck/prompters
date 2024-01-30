@@ -1,7 +1,7 @@
 #!/bin/sh
 clear
 
-VER="0.032"
+VER="0.033"
 
 #----------------------------------------------------------------#
 # Name: dsfs-menu                                                #
@@ -16,6 +16,7 @@ VER="0.032"
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
 #                                                                #
 # Change History (top down):                                     #
+#    2024/01/28 LBD - 0.033 More experimentation with createparm #
 #    2024/01/27 LBD - 0.032 Fix createparm quotes                #
 #                           and default SEC to PRIM if blank     #
 #    2024/01/25 LBD - 0.031 more cleanup                         #
@@ -75,17 +76,24 @@ case "$SEL" in
     fi
 
     RECFM=$(gum choose "FB" "VB" --header "Select Record Format:" --header.foreground="11")
-    LRECL=$(gum input --header "Enter the LRECL for the model" --header.foreground="11")
-    BLKSZ=$(gum input --header "Enter the Blocksize for the model" --header.foreground="11")
+    LRECL=$(gum input --header "Enter the LRECL for the model:" --header.foreground="11")
+    BLKSZ=$(gum input --header "Enter the Blocksize for the model (0):" --header.foreground="11")
 
-    SPACE=$(gum choose "cyl" "tracks" --header.foreground="11" --header "Enter Allocation Type:")
-    PRIM=$(gum input --header.foreground="11" --header "Enter Primary Space Quantity:")
-    SEC=$(gum input  --header.foreground="11" --header "Enter Secondary Space Quantity:")
-
-    if [ -z "$SEC" ]; then
-       SEC=$PRIM
+    if [ -z "$BLKSZ" ]; then
+       BLKSZ=0
     fi
 
+    SPACE=$(gum choose "tracks" "cyl" --header.foreground="11" --header "Enter Allocation Type:")
+    PRIM=$(gum input --header.foreground="11" --header "Enter Primary Space Quantity: (1)")
+
+    if [ -z "$PRIM" ]; then
+       PRIM=1
+    fi
+    SEC=$(gum input  --header.foreground="11" --header "Enter Secondary Space Quantity: ($PRIM)")
+
+    if [ -z "$SEC" ]; then
+       SEC="$PRIM"
+    fi
     DATAC=$(gum input --width 8 --header "SMS Data Class:" --header.foreground="11")
     MGMTC=$(gum input --width 8 --header "SMS Management Class:" --header.foreground="11")
     STORC=$(gum input --width 8 --header "SMS Storage Class:" --header.foreground="11")
@@ -105,8 +113,8 @@ case "$SEL" in
 echo  dsadm createparm -path /dsfs/$TYPE/$HLQ $MODEL \
         '"'"$DSORG recfm($RECFM) lrecl($LRECL) blksize($BLKSZ) $SPACE space($PRIM,$SEC)"'"'
  PART2="$DSORG recfm($RECFM) lrecl($LRECL) blksize($BLKSZ) $SPACE space($PRIM,$SEC)"
-echo 'Part2:' $PART2
-    dsadm createparm -path /dsfs/$TYPE/$HLQ $MODEL '"'$PART2'"'
+
+ dsadm createparm -path /dsfs/$TYPE/$HLQ $MODEL '"'$PART2'"'
     ;;
 
   fileinfo)
