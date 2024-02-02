@@ -1,6 +1,6 @@
 #!/bin/sh
 clear
-VER="0.07"
+VER="0.08"
 
 #----------------------------------------------------------------#
 # Name: mantastic                                                #
@@ -16,6 +16,7 @@ VER="0.07"
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
 #                                                                #
 # Change History (top down):                                     #
+#    2024/02/02 LBD - 0.08 Add exports for _TAG                  #
 #    2024/01/29 LBD - 0.07 Simplify color change for banner      #
 #    2024/01/29 LBD - 0.06 Fix tail on man -k results            #
 #    2024/01/28 LBD - 0.05 Fix prompt color                      #
@@ -47,6 +48,10 @@ export GUM_INPUT_PROMPT_FOREGROUND="#$COLOR"
 export GUM_INPUT_PLACEHOLDER=". . ."
 export GUM_IMPORT_PROMPT="* "
 export TERM=xterm-256color
+
+export _TAG_REDIR_IN=txt
+export _TAG_REDIR_OUT=txt
+export _TAG_REDIR_ERR=txt
 
 gum style \
         --foreground $COLOR --border-foreground $COLOR --border double \

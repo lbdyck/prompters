@@ -1,7 +1,11 @@
 #!/bin/sh
 clear
 
-VER="0.035"
+export _TAG_REDIR_IN=txt
+export _TAG_REDIR_OUT=txt
+export _TAG_REDIR_ERR=txt
+
+VER="0.036"
 
 #----------------------------------------------------------------#
 # Name: dsfs-menu                                                #
@@ -16,6 +20,7 @@ VER="0.035"
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
 #                                                                #
 # Change History (top down):                                     #
+#    2024/02/02 LBD - 0.036 Add exports for _TAG to fix display  #
 #    2024/02/01 LBD - 0.035 Fix createparm                       #
 #    2024/01/30 LBD - 0.034 Add level option for dsfs maint lvl  #
 #    2024/01/28 LBD - 0.033 More experimentation with createparm #
@@ -34,7 +39,7 @@ VER="0.035"
 #--------------------------------------------------------------=-#
 PAGER="gum pager"
 # PAGER="more"
-PAGER="less"
+# PAGER="less"
 
 export TERM=xterm-256color
 
