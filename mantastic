@@ -71,10 +71,28 @@ export _TAG_REDIR_IN=txt
 export _TAG_REDIR_OUT=txt
 export _TAG_REDIR_ERR=txt
 
+#----------------------------------------------------------------#
+# Display normal banner unless -h or -help                       #
+#----------------------------------------------------------------#
+ if [ "$1" != "-help" -a "$1" != "-h" ]; then
  gum style \
           --foreground $COLOR --border-foreground $COLOR --border double \
           --align center --width 50 --margin "1 2" --padding "2 4" \
           'z/OS Open Tools Man Viewer' $VER
+ else
+ gum style \
+          --foreground $COLOR --border-foreground $COLOR --border double \
+          --align left --width 80 --margin "1 2" --padding "2 4" \
+          "z/OS Open Tools Man Viewer version $VER"\
+          '    ' \
+          'mantastic syntax is: ' \
+          '    ' \
+          'mantastic man-page x  x is any non-blank to display manpage' \
+          'mantastic string      find string in manpage description and list' \
+          'mantastic -help, -h   display this help                         ' \
+          'mantastic             prompt for string'
+  exit 0
+fi
 
 #----------------------------------------------------------------#
 # Check for zero arguments and prompt if none                    #
