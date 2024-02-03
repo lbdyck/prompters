@@ -34,6 +34,11 @@ VER="0.10"
 #    2024/01/08 LBD - 0.00 creation                              #
 #                                                                #
 #--------------------------------------------------------------=-#
+# Repository: github.com/lbdyck/prompters                        #
+#--------------------------------------------------------------=-#
+# Copyleft by Lionel B. Dyck 2004                                #
+# Name credit to Igor Todorovski                                 #
+#--------------------------------------------------------------=-#
 
 #-------------------------------------------------------------=--#
 # Comment and uncomment to define which pager to use for viewing #
