@@ -1,9 +1,5 @@
-#!/bin/sh
+#!/bin/env bash
 clear
-
-export _TAG_REDIR_IN=txt
-export _TAG_REDIR_OUT=txt
-export _TAG_REDIR_ERR=txt
 
 VER="0.036"
 
@@ -15,6 +11,8 @@ VER="0.036"
 #          and use these commands.                               #
 #                                                                #
 # Dependencies:  gum or less or more                             #
+#                bash is required as /bin/sh does not work with  #
+#                gum pager but works fine for less/more          #
 #                                                                #
 # Author/Contributors (or whom to blame for this)                #
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
@@ -32,29 +30,52 @@ VER="0.036"
 #    2024/01/22 LBD - 0.02 add comments and generalize pager     #
 #    2024/01/08 LBD - 0.00 creation                              #
 #                                                                #
-#--------------------------------------------------------------=-#
+#----------------------------------------------------------------#
 
-#-------------------------------------------------------------=--#
+#----------------------------------------------------------------#
 # Comment and uncomment to define which pager to use for viewing #
-#--------------------------------------------------------------=-#
+#----------------------------------------------------------------#
 PAGER="gum pager"
 # PAGER="more"
 # PAGER="less"
 
+#----------------------------------------------------------------#
+# Define the REDIR's and TERM to our liking                      #
+#----------------------------------------------------------------#
+export _TAG_REDIR_IN=txt
+export _TAG_REDIR_OUT=txt
+export _TAG_REDIR_ERR=txt
+
 export TERM=xterm-256color
 
+#----------------------------------------------------------------#
+# Define the color for the banner                                #
+#  5 - purple                                                    #
+# 12 - blue shade                                                #
+# 33 - darker blue                                               #
+# 46 - green                                                     #
+# 51 - turq shade                                                #
+#----------------------------------------------------------------#
+COLOR=51
+
+#----------------------------------------------------------------#
+# Display our banner telling everyone who we are                 #
+#----------------------------------------------------------------#
 gum style \
-        --foreground 51 --border-foreground 51 --border double \
+        --foreground $COLOR --border-foreground $COLOR --border double \
         --align center --width 50 --margin "1 2" --padding "2 4" \
         'z/OS Open Tools dsfs User Menu' $VER
 
-export GUM_INPUT_CURSOR_FOREGROUND="#51"
-export GUM_INPUT_PROMPT_FOREGROUND="#51"
+#----------------------------------------------------------------#
+# Define the gum env variables                                   #
+#----------------------------------------------------------------#
+export GUM_INPUT_CURSOR_FOREGROUND="#$COLOR"
+export GUM_INPUT_PROMPT_FOREGROUND="#$COLOR"
 export GUM_INPUT_PLACEHOLDER=". . ."
 export GUM_IMPORT_PROMPT="* "
 
 SEL=$(gum choose "createparm" "fileinfo" "fsinfo" "help" "query" "configquery" "level" --header "Select DSFS Action:" \
-     --header.foreground="51")
+     --header.foreground="$COLOR")
 case "$SEL" in
   createparm)
     echo "Selected" $SEL
