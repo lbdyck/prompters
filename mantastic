@@ -1,6 +1,6 @@
 #!/bin/sh
 clear
-VER="0.10"
+VER="0.20"
 
 #----------------------------------------------------------------#
 # Name: mantastic                                                #
@@ -14,6 +14,7 @@ VER="0.10"
 #                     in the man database                        #
 #          x          any non-blank to invoke the pager for      #
 #                     the specific man command                   #
+#          -h, -help  display help information                   #
 #                                                                #
 # Dependencies:  gum plus less or more                           #
 #                                                                #
@@ -23,6 +24,7 @@ VER="0.10"
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
 #                                                                #
 # Change History (top down):                                     #
+#    2024/02/03 LBD - 0.20 Add -h and -help                      #
 #    2024/02/03 LBD - 0.10 Add option for direct to man          #
 #    2024/02/02 LBD - 0.08 Add exports for _TAG                  #
 #    2024/01/29 LBD - 0.07 Simplify color change for banner      #
@@ -33,28 +35,28 @@ VER="0.10"
 #    2024/01/22 LBD - 0.02 add comments and generalize pager     #
 #    2024/01/08 LBD - 0.00 creation                              #
 #                                                                #
-#--------------------------------------------------------------=-#
+#----------------------------------------------------------------#
 # Repository: github.com/lbdyck/prompters                        #
-#--------------------------------------------------------------=-#
+#----------------------------------------------------------------#
 # Copyleft by Lionel B. Dyck 2004                                #
 # Name credit to Igor Todorovski                                 #
-#--------------------------------------------------------------=-#
+#----------------------------------------------------------------#
 
-#-------------------------------------------------------------=--#
+#----------------------------------------------------------------#
 # Comment and uncomment to define which pager to use for viewing #
-#--------------------------------------------------------------=-#
+#----------------------------------------------------------------#
 PAGER="gum pager"
 # PAGER="more"
 # PAGER="less"
 
-#-------------------------------------------------------------=--#
+#----------------------------------------------------------------#
 # Define the color for the banner                                #
 #  5 - purple                                                    #
 # 12 - blue shade                                                #
 # 33 - darker blue                                               #
 # 46 - green                                                     #
 # 51 - turq shade                                                #
-#--------------------------------------------------------------=-#
+#----------------------------------------------------------------#
 COLOR=51
 
 export GUM_INPUT_PROMPT_FOREGROUND="#$COLOR"
@@ -62,24 +64,21 @@ export GUM_INPUT_PLACEHOLDER=". . ."
 export GUM_IMPORT_PROMPT="* "
 export TERM=xterm-256color
 
-#--------------------------------------------------------------=-#
+#----------------------------------------------------------------#
 # Define the TAG REDIR for our needs                             #
-#--------------------------------------------------------------=-#
+#----------------------------------------------------------------#
 export _TAG_REDIR_IN=txt
 export _TAG_REDIR_OUT=txt
 export _TAG_REDIR_ERR=txt
 
-#--------------------------------------------------------------=-#
-# Display the banner telling folks who we are                    #
-#--------------------------------------------------------------=-#
-gum style \
-        --foreground $COLOR --border-foreground $COLOR --border double \
-        --align center --width 50 --margin "1 2" --padding "2 4" \
-        'z/OS Open Tools Man Viewer' $VER
+ gum style \
+          --foreground $COLOR --border-foreground $COLOR --border double \
+          --align center --width 50 --margin "1 2" --padding "2 4" \
+          'z/OS Open Tools Man Viewer' $VER
 
-#--------------------------------------------------------------=-#
+#----------------------------------------------------------------#
 # Check for zero arguments and prompt if none                    #
-#--------------------------------------------------------------=-#
+#----------------------------------------------------------------#
 if [ "$#" -eq 0 ]; then
     ARG=$(gum input --prompt "Enter a command for a manpage or a word to search for:" \
     --placeholder="e.g. ssh" --value=" " --header.foreground="11")
@@ -87,10 +86,10 @@ else
     ARG=$1
 fi
 
-#--------------------------------------------------------------=-#
+#----------------------------------------------------------------#
 # If only 1 argument then do a search                            #
-#--------------------------------------------------------------=-#
-if [ "$#" -eq 1 ]; then
+#----------------------------------------------------------------#
+if [ "$#" -le 1 ]; then
    MAN=$(gum choose $(man -k $ARG | cut -d" " -f1 | tail -n +1) \
      --header "Select Man Page to View" --header.foreground="11")
    MAN=$(echo $MAN | cut -d" " -f1)
@@ -98,9 +97,9 @@ else
    MAN=$ARG
 fi
 
-#--------------------------------------------------------------=-#
+#----------------------------------------------------------------#
 # If we have a man page then display it else report no selection #
-#--------------------------------------------------------------=-#
+#----------------------------------------------------------------#
 if [ -z "$MAN" ]; then
    echo 'No Selection.'
    else
