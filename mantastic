@@ -1,12 +1,19 @@
 #!/bin/sh
 clear
-VER="0.08"
+VER="0.10"
 
 #----------------------------------------------------------------#
 # Name: mantastic                                                #
 #                                                                #
 # Purpose: Provide the shell user with an easy to use prompt     #
 #          to find and display man pages.                        #
+#                                                                #
+# Syntax:  mantastic man-string x                                #
+#                                                                #
+#          man-string is either a manpage or string to search    #
+#                     in the man database                        #
+#          x          any non-blank to invoke the pager for      #
+#                     the specific man command                   #
 #                                                                #
 # Dependencies:  gum plus less or more                           #
 #                                                                #
@@ -16,6 +23,7 @@ VER="0.08"
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
 #                                                                #
 # Change History (top down):                                     #
+#    2024/02/03 LBD - 0.10 Add option for direct to man          #
 #    2024/02/02 LBD - 0.08 Add exports for _TAG                  #
 #    2024/01/29 LBD - 0.07 Simplify color change for banner      #
 #    2024/01/29 LBD - 0.06 Fix tail on man -k results            #
@@ -49,15 +57,24 @@ export GUM_INPUT_PLACEHOLDER=". . ."
 export GUM_IMPORT_PROMPT="* "
 export TERM=xterm-256color
 
+#--------------------------------------------------------------=-#
+# Define the TAG REDIR for our needs                             #
+#--------------------------------------------------------------=-#
 export _TAG_REDIR_IN=txt
 export _TAG_REDIR_OUT=txt
 export _TAG_REDIR_ERR=txt
 
+#--------------------------------------------------------------=-#
+# Display the banner telling folks who we are                    #
+#--------------------------------------------------------------=-#
 gum style \
         --foreground $COLOR --border-foreground $COLOR --border double \
         --align center --width 50 --margin "1 2" --padding "2 4" \
         'z/OS Open Tools Man Viewer' $VER
 
+#--------------------------------------------------------------=-#
+# Check for zero arguments and prompt if none                    #
+#--------------------------------------------------------------=-#
 if [ "$#" -eq 0 ]; then
     ARG=$(gum input --prompt "Enter a command for a manpage or a word to search for:" \
     --placeholder="e.g. ssh" --value=" " --header.foreground="11")
@@ -65,13 +82,22 @@ else
     ARG=$1
 fi
 
-MAN=$(gum choose $(man -k $ARG | cut -d" " -f1 | tail -n +1) \
-  --header "Select Man Page to View" --header.foreground="11")
-MAN=$(echo $MAN | cut -d" " -f1)
+#--------------------------------------------------------------=-#
+# If only 1 argument then do a search                            #
+#--------------------------------------------------------------=-#
+if [ "$#" -eq 1 ]; then
+   MAN=$(gum choose $(man -k $ARG | cut -d" " -f1 | tail -n +1) \
+     --header "Select Man Page to View" --header.foreground="11")
+   MAN=$(echo $MAN | cut -d" " -f1)
+else
+   MAN=$ARG
+fi
 
+#--------------------------------------------------------------=-#
+# If we have a man page then display it else report no selection #
+#--------------------------------------------------------------=-#
 if [ -z "$MAN" ]; then
    echo 'No Selection.'
    else
       man $MAN | $PAGER
 fi
-
