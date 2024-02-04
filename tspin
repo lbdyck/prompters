@@ -1,0 +1,26 @@
+#!/bin/sh
+clear
+# demonstrate the various options for gum spin
+#
+SPIN="line"
+gum spin --title "test $SPIN:" --spinner="$SPIN" -- sleep 3
+SPIN="dot"
+gum spin --title "test $SPIN:" --spinner="$SPIN" -- sleep 3
+SPIN="minidot"
+gum spin --title "test $SPIN:" --spinner="$SPIN" -- sleep 3
+SPIN="jump"
+gum spin --title "test $SPIN:" --spinner="$SPIN" -- sleep 3
+SPIN="pulse"
+gum spin --title "test $SPIN:" --spinner="$SPIN" -- sleep 3
+SPIN="points"
+gum spin --title "test $SPIN:" --spinner="$SPIN" -- sleep 3
+SPIN="globe"
+gum spin --title "test $SPIN:" --spinner="$SPIN" -- sleep 3
+SPIN="moon"
+gum spin --title "test $SPIN:" --spinner="$SPIN" -- sleep 3
+SPIN="monkey"
+gum spin --title "test $SPIN:" --spinner="$SPIN" -- sleep 3
+SPIN="meter"
+gum spin --title "test $SPIN:" --spinner="$SPIN" -- sleep 3
+SPIN="hamburger"
+gum spin --title "test $SPIN:" --spinner="$SPIN" -- sleep 3
