@@ -31,7 +31,7 @@ It will then prompt for the various options allowed and then invoke the command.
 
 ## mantastic
 
-This tools will prompt for a string (i.e. `ssh`) and will display a selection list 
+This tool will prompt for a string (i.e. `ssh`) and will display a selection list 
 of all man pages with the string in the page description.
 
 It may be invoked one of two ways:
@@ -39,4 +39,13 @@ It may be invoked one of two ways:
 `mantastic` will prompt for the string
 
 `mantastic string` will bypass the prompt and immediately present the selection list.
+
+## zopen_install
+
+This tool demonstrates constructing a zopen install command by prompting for the
+packages to install.
+
+## tspin
+
+This is a demonstation script to show the various gum spin spinner options.
 
