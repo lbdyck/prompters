@@ -1,0 +1,88 @@
+#!/bin/env/bash
+
+VER='0.02'
+clear
+
+#---------------------------------------------------#
+# Name: zopen_install                               #
+#                                                   #
+# Purpose: prompt user for zopen packages that are  #
+#          not installed but available to be.       #
+#                                                   #
+# Dependencies: gum and zopen                       #
+#                                                   #
+# Syntax:  zopen_install                            #
+#                                                   #
+# Author/Contributors:                              #
+#   Lionel B. Dyck (lbdyck@gmail.com)               #
+#                                                   #
+# Change History (current on top):                  #
+#   2024/02/24 LBD - 0.02 Refine                    #
+#   2024/02/03 LBD - 0.01 Creation                  #
+#---------------------------------------------------#
+# Repository: github.com/lbdyck/prompters           #
+#---------------------------------------------------#
+# Copyleft by Lionel B. Dyck 2004                   #
+#---------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Define the color for the banner                                #
+#  5 - purple                                                    #
+# 12 - blue shade                                                #
+# 33 - darker blue                                               #
+# 46 - green                                                     #
+# 51 - turq shade                                                #
+#----------------------------------------------------------------#
+COLOR=51
+
+#----------------------------------------------------------------#
+# Define the spinner                                             #
+# line, dot, minidot, jump, pulse, points, globe, moon,          #
+# monkey, meter, hamburger                                       #
+#----------------------------------------------------------------#
+SPIN="line"
+#SPIN="dot"
+#SPIN="minidot"
+#SPIN="jump"
+#SPIN="pulse"
+#SPIN="points"
+#SPIN="globe"
+#SPIN="moon"
+#SPIN="monkey"
+#SPIN="meter"
+#SPIN="hamburger"
+
+export GUM_INPUT_PROMPT_FOREGROUND="#$COLOR"
+export GUM_INPUT_PLACEHOLDER=". . ."
+export GUM_IMPORT_PROMPT="* "
+export TERM=xterm-256color
+
+#----------------------------------------------------------------#
+# Define the TAG REDIR for our needs                             #
+#----------------------------------------------------------------#
+export _TAG_REDIR_IN=txt
+export _TAG_REDIR_OUT=txt
+export _TAG_REDIR_ERR=txt
+ 
+gum style \
+   --foreground $COLOR --border-foreground $COLOR --border double \
+   --align center --width 50 --margin "1 2" --padding "2 4" \
+   'z/OS Open Tools Installation Selector' $VER
+
+gum spin --title "Generating list of available packages" -s "$SPIN" \
+  --show-output --spinner.foreground="$COLOR" --title.foreground="$COLOR" \
+  -- zopen query --list > /tmp/zopen_list
+
+SELECTED=$(cat /tmp/zopen_list | grep Not | cut -d " " -f1  | \
+  gum choose --no-limit \
+  --header "Select packages to install" --header.foreground="$COLOR") 
+
+INSTALL="zopen install -y $SELECTED"
+
+echo -e "Generated command: \n$INSTALL"
+
+echo " "
+echo "This code will not actually execute the install yet"
+echo " "
+
+gum confirm "Execute Generated zopen install:" && echo "running $INSTALL"
