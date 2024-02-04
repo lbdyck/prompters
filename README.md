@@ -2,6 +2,9 @@
 A collection, growing, of shell scripts to guide/prompt the use of various shell 
 commands.
 
+***Note that the names of the tools are subject to change if anyone has a better name
+for them***
+
 This project was started out of my frustration at (a) finding the right shell command 
 and then (b) using it. For years (decades actually) I've developed
 ISPF menus and dialogs that help users to find and use MVS, OS/390, 
