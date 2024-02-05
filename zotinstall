@@ -4,14 +4,14 @@ VER='0.03'
 clear
 
 #---------------------------------------------------#
-# Name: zotinstall                               #
+# Name: zotinstall                                  #
 #                                                   #
 # Purpose: prompt user for zopen packages that are  #
 #          not installed but available to be.       #
 #                                                   #
 # Dependencies: gum and zopen and bash              #
 #                                                   #
-# Syntax:  zotinstall                            #
+# Syntax:  zotinstall                               #
 #                                                   #
 # Author/Contributors:                              #
 #   Lionel B. Dyck (lbdyck@gmail.com)               #
