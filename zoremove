@@ -4,14 +4,14 @@ VER='0.01'
 clear
 
 #---------------------------------------------------#
-# Name: zopen_remove                                #
+# Name: zoremove                                    #
 #                                                   #
 # Purpose: prompt user for zopen packages that are  #
 #          installed and to be removed              #
 #                                                   #
 # Dependencies: gum and zopen and bash              #
 #                                                   #
-# Syntax:  zopen_removel                            #
+# Syntax:  zoremove                                 #
 #                                                   #
 # Author/Contributors:                              #
 #   Lionel B. Dyck (lbdyck@gmail.com)               #
