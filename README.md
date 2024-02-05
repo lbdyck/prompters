@@ -43,12 +43,12 @@ It may be invoked one of two ways:
 
 `mantastic string` will bypass the prompt and immediately present the selection list.
 
-## zoinstall
+## zotinstall
 
 This tool demonstrates constructing a zopen install command by prompting for the
 packages to install and then perform a `mandb` if enabled.
 
-## zoremove
+## zotremove
 
 The reverse of zopen_install to remove packages.
 
