@@ -1,4 +1,4 @@
-#!/bin/bash  
+#!/bin/env bash  
 #
 # Colors - loop thru a range of colors 1 to 999 
 #          to display a small banner to see what
