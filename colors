@@ -1,0 +1,32 @@
+#!/bin/bash  
+#
+# Colors - loop thru a range of colors 1 to 999 
+#          to display a small banner to see what
+#          the color looks like
+#
+# Syntax:  ./colors from to  
+#
+#          e.g. ./colors 20 29
+#
+echo 'Loop start:' $1 'end:' $2
+
+export GUM_INPUT_PLACEHOLDER=". . ."
+export GUM_IMPORT_PROMPT="* "
+export TERM=xterm-256color
+
+for ((i=$1; i<=$2; i++))
+   do
+   gum style \
+        --foreground $i --border-foreground $i --border double \
+        --align center --width 25 --margin "1 1" --padding "1 1" \
+        "Color Testing $i"
+#   gum input --prompt.foreground "$i" --prompt "Enter to continue. $i" 
+done
+
+
+
+
+
+
+
+
