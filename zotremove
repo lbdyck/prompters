@@ -1,25 +1,24 @@
 #!/bin/env bash
 
-VER='0.03'
+VER='0.02'
 clear
 
 #---------------------------------------------------#
-# Name: zotinstall                                  #
+# Name: zotremove                                   #
 #                                                   #
 # Purpose: prompt user for zopen packages that are  #
-#          not installed but available to be.       #
+#          installed and to be removed              #
 #                                                   #
 # Dependencies: gum and zopen and bash              #
 #                                                   #
-# Syntax:  zotinstall                               #
+# Syntax:  zotremove                                #
 #                                                   #
 # Author/Contributors:                              #
 #   Lionel B. Dyck (lbdyck@gmail.com)               #
 #                                                   #
 # Change History (current on top):                  #
-#   2024/02/04 LBD - 0.03 Enable filtering and more #
-#   2024/02/04 LBD - 0.02 Refine                    #
-#   2024/02/03 LBD - 0.01 Creation                  #
+#   2024/02/05 LBD - 0.02 Fix filter                #
+#   2024/02/04 LBD - 0.01 Creation                  #
 #---------------------------------------------------#
 # Repository: github.com/lbdyck/prompters           #
 #---------------------------------------------------#
@@ -28,11 +27,12 @@ clear
 
 #----------------------------------------------------------------#
 # Define the color for the banner                                #
-#  5 - purple                                                    #
-# 12 - blue shade                                                #
-# 33 - darker blue                                               #
-# 46 - green                                                     #
-# 51 - turq shade                                                #
+#   5 - purple                                                   #
+#  12 - blue shade                                               #
+#  33 - darker blue                                              #
+#  46 - green                                                    #
+#  51 - turq shade                                               #
+# 226 - yellow                                                   #
 #----------------------------------------------------------------#
 COLOR=51
 
@@ -85,29 +85,30 @@ export _TAG_REDIR_ERR=txt
 gum style \
    --foreground $COLOR --border-foreground $COLOR --border double \
    --align center --width 50 --margin "1 2" --padding "2 4" \
-   'z/OS Open Tools Installation Selector' $VER
+   'z/OS Open Tools Removal Selector' $VER
 
 # spinning something while we collect the list of all available packages
-gum spin --title "Generating list of available packages" -s "$SPIN" \
+gum spin --title "Generating list of all installed packages" -s "$SPIN" \
   --show-output --spinner.foreground="$COLOR" --title.foreground="$COLOR" \
-  -- zopen query --list > "$TEMP"
+  -- zopen query --installed > "$TEMP"
 
 # Ask the user if they want to filter the packages
-FILTER=$(gum input --prompt "Enter text to filter the available packages or blank:" \
+FILTER=$(gum input --prompt "Enter text to filter the installed packages or blank:" \
     --placeholder="e.g. ssh" --value=" " --header.foreground="$COLOR")
 
-# Test if there is a filter and if so then clean up working file
+# Test if there is a filter and if so then clean up working file the
+# Prompt for package selections - any number allowed
+# but first only use the package name
 if [ ! -z $FILTER ]; then
    grep -i $FILTER $TEMP > $TEMPW
-   mv -f "$TEMPW" "$TEMP"
+   SELECTED=$(cat "$TEMPW"| cut -d " " -f1  | \
+   gum choose --no-limit \
+  --header "Select packages to remove" --header.foreground="$COLOR") 
+else
+  SELECTED=$(cat "$TEMP"| tail -n +2 | cut -d " " -f1  | \
+     gum choose --no-limit \
+    --header "Select packages to remove" --header.foreground="$COLOR") 
 fi
-
-# Prompt for package selections - any number allowed
-# but first remove all installed packages and only use 
-# the package name
-SELECTED=$(cat "$TEMP"| grep Not | cut -d " " -f1  | \
-  gum choose --no-limit \
-  --header "Select packages to install" --header.foreground="$COLOR") 
 
 # Test if any packages selected - must have at least one 
 if [ -z "$SELECTED" ]; then
@@ -118,11 +119,11 @@ fi
 # Remove the work files
 rm $TEMP
 
-# Generate the zopen install command
-INSTALL="zopen install -y $SELECTED"
+# Generate the zopen remove command
+REMOVE="zopen remove -y $SELECTED"
 
 # report what we have generated for the user
-echo -e "Generated command: \n$INSTALL"
+echo -e "Generated command: \n$REMOVE"
 
 # If gum confirm Yes then process the next command
-gum confirm "Execute Generated zopen install:" && $INSTALL && $MANDB
+gum confirm "Execute Generated zopen remove:" && $REMOVE && $MANDB
