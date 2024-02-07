@@ -1,6 +1,6 @@
 #!/bin/sh
 clear
-VER="0.20"
+VER="0.21"
 
 #----------------------------------------------------------------#
 # Name: mantastic                                                #
@@ -24,6 +24,7 @@ VER="0.20"
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
 #                                                                #
 # Change History (top down):                                     #
+#    2024/02/07 LBD - 0.21 Check for no filter                   #
 #    2024/02/03 LBD - 0.20 Add -h and -help                      #
 #    2024/02/03 LBD - 0.10 Add option for direct to man          #
 #    2024/02/02 LBD - 0.08 Add exports for _TAG                  #
@@ -51,11 +52,11 @@ PAGER="gum pager"
 
 #----------------------------------------------------------------#
 # Define the color for the banner                                #
-#  5 - purple                                                    #
-# 12 - blue shade                                                #
-# 33 - darker blue                                               #
-# 46 - green                                                     #
-# 51 - turq shade                                                #
+#   5 - purple                                                   #
+#  12 - blue shade                                               #
+#  33 - darker blue                                              #
+#  46 - green                                                    #
+#  51 - turq shade                                               #
 #----------------------------------------------------------------#
 COLOR=51
 
@@ -102,6 +103,11 @@ if [ "$#" -eq 0 ]; then
     --placeholder="e.g. ssh" --value=" " --header.foreground="11")
 else
     ARG=$1
+fi
+
+if [ -n "$ARG" ]; then
+   echo 'No search entered - try again...'
+   exit 0
 fi
 
 #----------------------------------------------------------------#
