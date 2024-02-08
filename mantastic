@@ -1,6 +1,6 @@
 #!/bin/sh
 clear
-VER="0.21"
+VER="0.23"
 
 #----------------------------------------------------------------#
 # Name: mantastic                                                #
@@ -24,6 +24,9 @@ VER="0.21"
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
 #                                                                #
 # Change History (top down):                                     #
+#    2024/02/08 LBD - 0.22 Check for no option on call           #
+#                          Fixup test if no filter provided      #
+#                          Improve help for and and or           #
 #    2024/02/07 LBD - 0.21 Check for no filter                   #
 #    2024/02/03 LBD - 0.20 Add -h and -help                      #
 #    2024/02/03 LBD - 0.10 Add option for direct to man          #
@@ -83,7 +86,7 @@ export _TAG_REDIR_ERR=txt
  else
  gum style \
           --foreground $COLOR --border-foreground $COLOR --border double \
-          --align left --width 80 --margin "1 2" --padding "2 4" \
+          --align left --width 70 --margin "1 2" --padding "1 2" \
           "z/OS Open Tools Man Viewer version $VER"\
           '    ' \
           'mantastic syntax is: ' \
@@ -91,7 +94,10 @@ export _TAG_REDIR_ERR=txt
           'mantastic man-page x  x is any non-blank to display manpage' \
           'mantastic string      find string in manpage description and list' \
           'mantastic -help, -h   display this help                         ' \
-          'mantastic             prompt for string'
+          'mantastic             prompt for string' \
+          '      ' \
+          'Note: The string is processed as logical OR for each word.' \
+          '      Use the -a between words for an AND search.'
   exit 0
 fi
 
@@ -105,7 +111,17 @@ else
     ARG=$1
 fi
 
-if [ -n "$ARG" ]; then
+#-----------------------------------------------------#
+# Now test for a blank argument and make it null      #
+#-----------------------------------------------------#
+if [ "$ARG" = " " ]; then
+   ARG=""
+fi
+
+#-----------------------------------------------------#
+# Now test for a null argument                        #
+#-----------------------------------------------------#
+if [ -z "$ARG" ]; then
    echo 'No search entered - try again...'
    exit 0
 fi
@@ -113,7 +129,7 @@ fi
 #----------------------------------------------------------------#
 # If only 1 argument then do a search                            #
 #----------------------------------------------------------------#
-if [ "$#" -le 1 ]; then
+if [ -n "$ARG" ]; then
    MAN=$(gum choose $(man -k $ARG | cut -d" " -f1 | tail -n +1) \
      --header "Select Man Page to View" --header.foreground="11")
    MAN=$(echo $MAN | cut -d" " -f1)
