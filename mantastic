@@ -78,6 +78,38 @@ export _TAG_REDIR_IN=txt
 export _TAG_REDIR_OUT=txt
 export _TAG_REDIR_ERR=txt
 
+# provide a mechanism to resume work on v8 versus 
+# ensure pristine.   Assume by default the user
+# desires a pristine state and a fresh fetch.
+FLAG1=0
+FLAG2=0
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -flag1)
+            echo "-flag1 switch used. "
+            FLAG1=1
+            shift
+            ;;
+        -flag2)
+            echo "-flag2 switch used. "
+            FLAG2=1
+            shift
+            ;;
+        -var1)
+            echo "var1 used with value $2"
+            echo "TODO: nothing to do yet"
+            shift 2
+            ;;
+        *)
+            echo "unknown option"
+            echo "USAGE: $0 [-flag1|-flag2] [-var1 n]"
+            exit 1
+            ;;
+    esac
+done
+
+
+exit
 #----------------------------------------------------------------#
 # Display normal banner unless -h or -help                       #
 #----------------------------------------------------------------#
@@ -104,6 +136,12 @@ export _TAG_REDIR_ERR=txt
           '      e.g. mantastic git -a push'
   exit 0
 fi
+
+
+
+
+
+
 
 #----------------------------------------------------------------#
 # Check for zero arguments and prompt if none                    #
