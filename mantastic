@@ -96,8 +96,8 @@ export _TAG_REDIR_ERR=txt
           'mantastic -help, -h   display this help                         ' \
           'mantastic             prompt for string' \
           '      ' \
-          'Note: the string is processed as an OR for each word.' \
-          '      Use a -a between words for an AND search.'
+          'Note: The string is processed as logical OR for each word.' \
+          '      Use the -a between words for an AND search.'
   exit 0
 fi
 
