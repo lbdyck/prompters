@@ -1,6 +1,6 @@
 #!/bin/sh
 clear
-VER="0.21"
+VER="0.22"
 
 #----------------------------------------------------------------#
 # Name: mantastic                                                #
@@ -24,6 +24,8 @@ VER="0.21"
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
 #                                                                #
 # Change History (top down):                                     #
+#    2024/02/08 LBD - 0.22 Check for no option on call           #
+#                          Fixup test if no filter provided      #
 #    2024/02/07 LBD - 0.21 Check for no filter                   #
 #    2024/02/03 LBD - 0.20 Add -h and -help                      #
 #    2024/02/03 LBD - 0.10 Add option for direct to man          #
@@ -105,7 +107,17 @@ else
     ARG=$1
 fi
 
-if [ -n "$ARG" ]; then
+#-----------------------------------------------------#
+# Now test for a blank argument and make it null      #
+#-----------------------------------------------------#
+if [ "$ARG" = " " ]; then
+   ARG=""
+fi
+
+#-----------------------------------------------------#
+# Now test for a null argument                        #
+#-----------------------------------------------------#
+if [ -z "$ARG" ]; then
    echo 'No search entered - try again...'
    exit 0
 fi
@@ -113,7 +125,7 @@ fi
 #----------------------------------------------------------------#
 # If only 1 argument then do a search                            #
 #----------------------------------------------------------------#
-if [ "$#" -le 1 ]; then
+if [ -n "$ARG" ]; then
    MAN=$(gum choose $(man -k $ARG | cut -d" " -f1 | tail -n +1) \
      --header "Select Man Page to View" --header.foreground="11")
    MAN=$(echo $MAN | cut -d" " -f1)
