@@ -1,6 +1,6 @@
 #!/bin/sh
 clear
-VER="0.24"
+VER="0.25"
 
 #----------------------------------------------------------------#
 # Name: mantastic                                                #
@@ -8,11 +8,11 @@ VER="0.24"
 # Purpose: Provide the shell user with an easy to use prompt     #
 #          to find and display man pages.                        #
 #                                                                #
-# Syntax:  mantastic man-string x                                #
+# Syntax:  mantastic man-string                                  #
 #                                                                #
 #          man-string is either a manpage or string to search    #
 #                     in the man database                        #
-#          x          any non-blank to invoke the pager for      #
+#          -d         will just display the man page             #
 #                     the specific man command                   #
 #          -h, -help  display help information                   #
 #                                                                #
@@ -24,6 +24,8 @@ VER="0.24"
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
 #                                                                #
 # Change History (top down):                                     #
+#    2024/02/08 LBD - 0.25 Change to use -d to display man now   #
+#                          Allow mantastic ? for help            #
 #    2024/02/08 LBD - 0.24 Bug fix for passed arguments          #
 #    2024/02/08 LBD - 0.23 Improve help for and and or           #
 #    2024/02/08 LBD - 0.22 Check for no option on call           #
@@ -79,7 +81,7 @@ export _TAG_REDIR_ERR=txt
 #----------------------------------------------------------------#
 # Display normal banner unless -h or -help                       #
 #----------------------------------------------------------------#
- if [ "$1" != "-help" -a "$1" != "-h" ]; then
+ if [ "$1" != "-help" -a "$1" != "-h" -a "$1" != "?" ]; then
  gum style \
           --foreground $COLOR --border-foreground $COLOR --border double \
           --align center --width 50 --margin "1 2" --padding "2 4" \
@@ -87,18 +89,19 @@ export _TAG_REDIR_ERR=txt
  else
  gum style \
           --foreground $COLOR --border-foreground $COLOR --border double \
-          --align left --width 70 --margin "1 2" --padding "1 2" \
-          "z/OS Open Tools Man Viewer version $VER"\
+          --align left --width 74 --margin "1 2" --padding "1 2" \
+          "z/OS Open Tools Man Viewer version --  $VER"\
           '    ' \
           'mantastic syntax is: ' \
           '    ' \
-          'mantastic man-page x  x is any non-blank to display manpage' \
-          'mantastic string      find string in manpage description and list' \
-          'mantastic -help, -h   display this help                         ' \
-          'mantastic             prompt for string' \
+          'mantastic man-page -d  to display manpage without additional prompts' \
+          'mantastic string       find string in manpage description and list' \
+          'mantastic -help, -h, ? display this help                         ' \
+          'mantastic              prompt for string' \
           '      ' \
           'Note: The string is processed as logical OR for each word.' \
-          '      Use the -a between words for an AND search.'
+          '      Use the -a between words for an AND search.'\
+          '      e.g. mantastic git -a push'
   exit 0
 fi
 
@@ -128,14 +131,19 @@ if [ -z "$ARG" ]; then
 fi
 
 #----------------------------------------------------------------#
-# If only 1 argument then do a search                            #
+# If any arguments then do a search unless arg 2 is -d           #
+# in which case we bypass the prompt and go right to the display #
 #----------------------------------------------------------------#
-if [ -n "$ARG" ]; then
-   MAN=$(gum choose $(man -k $ARG | cut -d" " -f1 | tail -n +1) \
-     --header "Select Man Page to View" --header.foreground="11")
-   MAN=$(echo $MAN | cut -d" " -f1)
-else
-   MAN=$ARG
+if [ "$2" != "-d" ]; then 
+  if [ -n "$ARG" ]; then
+     MAN=$(gum choose $(man -k $ARG | cut -d" " -f1 | tail -n +1) \
+       --header "Select Man Page to View" --header.foreground="11")
+     MAN=$(echo $MAN | cut -d" " -f1)
+  else
+     MAN=$ARG
+  fi
+else 
+    MAN=$1
 fi
 
 #----------------------------------------------------------------#
