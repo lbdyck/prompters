@@ -17,6 +17,8 @@ VER="0.25"
 #          -h, -help  display help information                   #
 #                                                                #
 # Dependencies:  gum plus less or more                           #
+#                mandb - must be run after any install/upgrade   #
+#                        of shell packages                       #
 #                                                                #
 # Platforms:     Any shell where less or gum are installed       #
 #                                                                #
