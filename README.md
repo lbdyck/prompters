@@ -34,7 +34,7 @@ It will then prompt for the various options allowed and then invoke the command.
 
 ## mantastic
 
-This tool will prompt for a string (i.e. `ssh`) and will display a selection list 
+This tool will prompt for a string (i.e. `git`) and will display a selection list 
 of all man pages with the string in the page description.
 
 It may be invoked one of two ways:
@@ -42,6 +42,12 @@ It may be invoked one of two ways:
 `mantastic` will prompt for the string
 
 `mantastic string` will bypass the prompt and immediately present the selection list.
+
+`mantastic man-page -d` to immediately display the man page.
+
+`mantastic -h` or `-help` or `?` to display a short help message.
+
+**Note** The use of `mandb` to update the man page database is highly (strongly) recommended.
 
 ## zotinstall
 
