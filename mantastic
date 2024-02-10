@@ -10,7 +10,7 @@ VER="0.26"
 #                                                                #
 # Syntax:  mantastic man-string                                  #
 #                                                                #
-#          man-string is either a manpage or string to search    #
+#          man-string is either a man page or string to search    #
 #                     in the man database                        #
 #          -d         will just display the man page             #
 #                     the specific man command                   #
@@ -102,8 +102,8 @@ export _TAG_REDIR_ERR=txt
           '    ' \
           'mantastic syntax is: ' \
           '    ' \
-          'mantastic man-page -d  to display manpage without additional prompts' \
-          'mantastic string       find string in manpage description and list' \
+          'mantastic man-page -d  to display man page without additional prompts' \
+          'mantastic string       find string in man page description and list' \
           'mantastic -help, -h, ? display this help                         ' \
           'mantastic              prompt for string' \
           '      ' \
@@ -117,7 +117,7 @@ fi
 # Check for zero arguments and prompt if none                    #
 #----------------------------------------------------------------#
 if [ "$#" -eq 0 ]; then
-    ARG=$(gum input --prompt "Enter a command for a manpage or a word to search for:" \
+    ARG=$(gum input --prompt "Enter a command for a man page or a word to search for:" \
     --placeholder="e.g. ssh" --value=" " --header.foreground="11")
 else
     ARG=$@
