@@ -1,6 +1,6 @@
 #!/bin/sh
 clear
-VER="0.25"
+VER="0.26"
 
 #----------------------------------------------------------------#
 # Name: mantastic                                                #
@@ -26,6 +26,7 @@ VER="0.25"
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
 #                                                                #
 # Change History (top down):                                     #
+#    2024/02/10 LBD - 0.26 Add more color options                #
 #    2024/02/08 LBD - 0.25 Change to use -d to display man now   #
 #                          Allow mantastic ? for help            #
 #    2024/02/08 LBD - 0.24 Bug fix for passed arguments          #
@@ -60,11 +61,16 @@ PAGER="gum pager"
 
 #----------------------------------------------------------------#
 # Define the color for the banner                                #
-#   5 - purple                                                   #
-#  12 - blue shade                                               #
-#  33 - darker blue                                              #
-#  46 - green                                                    #
-#  51 - turq shade                                               #
+#   5  - purple                                                  #
+#   9  - red                                                     #
+#  12  - light blue                                              #
+#  33  - darker blue                                             #
+#  46  - green                                                   #
+#  51  - turq shade                                              #
+#  86  - aqua                                                    #
+#  201 - hot pink                                                #
+#  202 - orange                                                  #
+#  214 - orange                                                  #
 #----------------------------------------------------------------#
 COLOR=51
 
@@ -136,7 +142,7 @@ fi
 # If any arguments then do a search unless arg 2 is -d           #
 # in which case we bypass the prompt and go right to the display #
 #----------------------------------------------------------------#
-if [ "$2" != "-d" ]; then 
+if [ "$2" != "-d" ]; then
   if [ -n "$ARG" ]; then
      MAN=$(gum choose $(man -k $ARG | cut -d" " -f1 | tail -n +1) \
        --header "Select Man Page to View" --header.foreground="11")
@@ -144,7 +150,7 @@ if [ "$2" != "-d" ]; then
   else
      MAN=$ARG
   fi
-else 
+else
     MAN=$1
 fi
 
