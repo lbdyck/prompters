@@ -29,12 +29,12 @@ are welcome to assist/improve.
 the preferred viewer.
 2. These are work in progress - improvements welcome.
 
-## dsfs-menu
+## [dsfs-menu])dsfs-menu)
 
 This prompter will prompt for one of the `dsadm` commands used with `dsfs` on z/OS. 
 It will then prompt for the various options allowed and then invoke the command.
 
-## mantastic
+## [mantastic](mantastic)
 
 This tool will prompt for a string (i.e. `git`) and will display a selection list 
 of all man pages with the string in the page description.
@@ -51,7 +51,7 @@ It may be invoked one of two ways:
 
 **Note** The use of `mandb` to update the man page database is highly (strongly) recommended.
 
-## zothelper
+## [zothelper](zothelper)
 
 This tools will prompt for one of the available `zopen` options and then construct the 
 appropriate command.
@@ -61,7 +61,7 @@ If the selected command is not support by `zothelper` then the commands help wil
 Currently `clean`, `install`, and `remove` are supported.
 
 
-## tspin
+## [tspin](tspin)
 
 This is a demonstation script to show the various gum spin spinner options.
 
