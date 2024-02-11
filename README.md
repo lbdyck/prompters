@@ -10,6 +10,8 @@ and then (b) using it. For years (decades actually) I've developed
 ISPF menus and dialogs that help users to find and use MVS, OS/390, 
 and z/OS applications.
 
+**NOTE** Be sure to check out the [Prompters Wiki ](https://github.com/lbdyck/prompters/wiki)
+
 ## Overview
 
 These prompters are shell scripts that use the `gum` tool for display and prompting.
