@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-VER='0.01'
+VER='0.02'
 clear
 
 #---------------------------------------------------#
@@ -16,6 +16,7 @@ clear
 #   Lionel B. Dyck (lbdyck@gmail.com)               #
 #                                                   #
 # Change History (current on top):                  #
+#   2024/02/11 LBD - 0.02 Add zopen upgrade         #
 #   2024/02/11 LBD - 0.01 Creation                  #
 #---------------------------------------------------#
 # Repository: github.com/lbdyck/prompters           #
@@ -88,8 +89,18 @@ gum style \
 # Prompt the user for the zopen options                    #
 #----------------------------------------------------------#
 ZOT=$(zopen help | sed -n '/Command:/,/Options:/ {//!p}' | \
-    gum choose --header.foreground="$COLOR" --header "Select zopen command:")
+    gum choose --header.foreground="$COLOR" \
+    --height=18 \
+    --header "Select zopen command (may need to scroll):")
 ZOT=$(echo $ZOT | cut -d " " -f1 )
+
+#----------------------------------------------------------#
+# Test for any selections                                  #
+#----------------------------------------------------------#
+if [ -z "$ZOT" ]; then
+   echo 'No selections made - exiting . . .'
+   exit 0
+fi
 
 #----------------------------------------------------------#
 # Process the Selected Command                             #
@@ -195,6 +206,17 @@ case "$ZOT" in
 
    # If gum confirm Yes then process the next command
    gum confirm "Execute Generated zopen remove:" && $REMOVE && $MANDB
+   exit 0
+   ;;
+  upgrade )
+
+   UPGRADE="zopen upgrade -y"
+
+   # report what we have generated for the user
+   echo -e "Generated command: \n$UPGRADE"
+
+   # If gum confirm Yes then process the next command
+   gum confirm "Execute Generated zopen upgrade:" && $UPGRADE && $MANDB
    exit 0
    ;;
 esac
