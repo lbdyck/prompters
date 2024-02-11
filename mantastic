@@ -1,6 +1,6 @@
 #!/bin/sh
 clear
-VER="0.26"
+VER="0.27"
 
 #----------------------------------------------------------------#
 # Name: mantastic                                                #
@@ -8,9 +8,9 @@ VER="0.26"
 # Purpose: Provide the shell user with an easy to use prompt     #
 #          to find and display man pages.                        #
 #                                                                #
-# Syntax:  mantastic man-string                                  #
+# Syntax:  mantastic man-keyword                                  #
 #                                                                #
-#          man-string is either a man page or string to search    #
+#          man-keyword is either a man page or keyword to search #
 #                     in the man database                        #
 #          -d         will just display the man page             #
 #                     the specific man command                   #
@@ -26,6 +26,10 @@ VER="0.26"
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
 #                                                                #
 # Change History (top down):                                     #
+#    2024/02/11 LBD - 0.27 Change prompt to use keyword instead  #
+#                          of string to be more accurate         #
+#                          Allow only arg to be number to test   #
+#                          colors                                #
 #    2024/02/10 LBD - 0.26 Add more color options                #
 #    2024/02/08 LBD - 0.25 Change to use -d to display man now   #
 #                          Allow mantastic ? for help            #
@@ -68,11 +72,21 @@ PAGER="gum pager"
 #  46  - green                                                   #
 #  51  - turq shade                                              #
 #  86  - aqua                                                    #
-#  201 - hot pink                                                #
-#  202 - orange                                                  #
-#  214 - orange                                                  #
+# 253  - blue                                                    #
+#                                                                #
+# Note: some colors work great for the banner but the prompt     #
+#       color may be unreadable                                  #
 #----------------------------------------------------------------#
 COLOR=51
+
+#----------------------------------------------------------------#
+# Allow passing a color as the only argument to test colors      #
+#----------------------------------------------------------------#
+if [ "$1" -ge 1 ] && [ "$1" -le 999 ]; then
+   COLOR=$1
+   1=""
+   set --
+fi
 
 export GUM_INPUT_PROMPT_FOREGROUND="#$COLOR"
 export GUM_INPUT_PLACEHOLDER=". . ."
@@ -103,11 +117,11 @@ export _TAG_REDIR_ERR=txt
           'mantastic syntax is: ' \
           '    ' \
           'mantastic man-page -d  to display man page without additional prompts' \
-          'mantastic string       find string in man page description and list' \
+          'mantastic keyword       find keyword in man page description and list' \
           'mantastic -help, -h, ? display this help                         ' \
-          'mantastic              prompt for string' \
+          'mantastic              prompt for keyword' \
           '      ' \
-          'Note: The string is processed as logical OR for each word.' \
+          'Note: The keyword is processed as logical OR for each word.' \
           '      Use the -a between words for an AND search.'\
           '      e.g. mantastic git -a push'
   exit 0
