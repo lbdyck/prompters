@@ -131,7 +131,7 @@ fi
 # Check for zero arguments and prompt if none                    #
 #----------------------------------------------------------------#
 if [ "$#" -eq 0 ]; then
-    ARG=$(gum input --prompt "Enter a command for a man page or a word to search for:" \
+    ARG=$(gum input --prompt "Enter a command for a man page or a keyword to search for:" \
     --placeholder="e.g. ssh" --value=" " --header.foreground="11")
 else
     ARG=$@
