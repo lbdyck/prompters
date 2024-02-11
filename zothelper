@@ -1,0 +1,203 @@
+#!/bin/env bash
+
+VER='0.01'
+clear
+
+#---------------------------------------------------#
+# Name: zothelper                                   #
+#                                                   #
+# Purpose: prompt user for zopen command options    #
+#                                                   #
+# Dependencies: gum and zopen and bash              #
+#                                                   #
+# Syntax:  zothelper                                #
+#                                                   #
+# Author/Contributors:                              #
+#   Lionel B. Dyck (lbdyck@gmail.com)               #
+#                                                   #
+# Change History (current on top):                  #
+#   2024/02/11 LBD - 0.01 Creation                  #
+#---------------------------------------------------#
+# Repository: github.com/lbdyck/prompters           #
+#---------------------------------------------------#
+# Copyleft by Lionel B. Dyck 2024                   #
+#---------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Define the color for the banner                                #
+#  5 - purple                                                    #
+# 12 - blue shade                                                #
+# 33 - darker blue                                               #
+# 46 - green                                                     #
+# 51 - turq shade                                                #
+#----------------------------------------------------------------#
+COLOR=51
+
+#----------------------------------------------------------------#
+# Define the spinner                                             #
+# line, dot, minidot, jump, pulse, points, globe, moon,          #
+# monkey, meter, hamburger                                       #
+#----------------------------------------------------------------#
+SPIN="line"
+#SPIN="dot"
+#SPIN="minidot"
+#SPIN="jump"
+#SPIN="pulse"
+#SPIN="points"
+#SPIN="globe"
+#SPIN="moon"
+#SPIN="monkey"
+#SPIN="meter"
+#SPIN="hamburger"
+
+#----------------------------------------------------------#
+# Define out temp and tempw variables                      #
+#----------------------------------------------------------#
+TEMP="/tmp/zopen_list"
+TEMPW="/tmp/zopen_listw"
+
+#----------------------------------------------------------#
+# Define the MANDB variable - null to not run              #
+#----------------------------------------------------------#
+MANDB="mandb"
+#MANDB=""
+
+#----------------------------------------------------------#
+# Define the gum environment variables                     #
+#----------------------------------------------------------#
+
+export GUM_INPUT_PROMPT_FOREGROUND="#$COLOR"
+export GUM_INPUT_PLACEHOLDER=". . ."
+export GUM_IMPORT_PROMPT="* "
+export TERM=xterm-256color
+
+#----------------------------------------------------------------#
+# Define the TAG REDIR for our needs                             #
+#----------------------------------------------------------------#
+export _TAG_REDIR_IN=txt
+export _TAG_REDIR_OUT=txt
+export _TAG_REDIR_ERR=txt
+
+# Display our banner
+gum style \
+   --foreground $COLOR --border-foreground $COLOR --border double \
+   --align center --width 50 --margin "1 2" --padding "2 4" \
+   'z/OS Open Tools Helper' $VER
+
+#----------------------------------------------------------#
+# Prompt the user for the zopen options                    #
+#----------------------------------------------------------#
+ZOT=$(zopen help | sed -n '/Command:/,/Options:/ {//!p}' | \
+    gum choose --header.foreground="$COLOR" --header "Select zopen command:")
+ZOT=$(echo $ZOT | cut -d " " -f1 )
+
+#----------------------------------------------------------#
+# Process the Selected Command                             #
+#----------------------------------------------------------#
+case "$ZOT" in
+#----------------------------------------------------------#
+# zopen clean command - use all the options                #
+#----------------------------------------------------------#
+  clean )
+    echo "Performing zopen clean"
+    zopen clean -c -d -m -u -v --version
+    exit 0
+    ;;
+
+#----------------------------------------------------------#
+# install available packages                               #
+#----------------------------------------------------------#
+  install )
+   # spinning something while we collect the list of all available packages
+   gum spin --title "Generating list of available packages" -s "$SPIN" \
+     --show-output --spinner.foreground="$COLOR" --title.foreground="$COLOR" \
+     -- zopen query --list > "$TEMP"
+
+   # Ask the user if they want to filter the packages
+   FILTER=$(gum input --prompt "Enter text to filter the available packages or blank:" \
+       --placeholder="e.g. ssh" --value=" " --header.foreground="$COLOR")
+
+   # Test if there is a filter and if so then clean up working file
+   if [ ! -z $FILTER ]; then
+      grep -i $FILTER $TEMP > $TEMPW
+      mv -f "$TEMPW" "$TEMP"
+   fi
+
+   # Prompt for package selections - any number allowed
+   # but first remove all installed packages and only use
+   # the package name
+   SELECTED=$(cat "$TEMP"| grep Not | cut -d " " -f1  | \
+     gum choose --no-limit \
+     --header "Select packages to install" --header.foreground="$COLOR")
+
+   # Test if any packages selected - must have at least one
+   if [ -z "$SELECTED" ]; then
+       echo "No selections - exiting...."
+       exit 0
+   fi
+
+   # Remove the work files
+   rm $TEMP
+
+   # Generate the zopen install command
+   INSTALL="zopen install -y $SELECTED"
+
+   # report what we have generated for the user
+   echo -e "Generated command: \n$INSTALL"
+
+   # If gum confirm Yes then process the next command
+   gum confirm "Execute Generated zopen install:" && $INSTALL && $MANDB
+   exit 0
+   ;;
+
+#----------------------------------------------------------#
+# Remove any installed packages                            #
+#----------------------------------------------------------#
+  remove )
+
+   # spinning something while we collect the list of all available packages
+   gum spin --title "Generating list of all installed packages" -s "$SPIN" \
+     --show-output --spinner.foreground="$COLOR" --title.foreground="$COLOR" \
+     -- zopen query --installed > "$TEMP"
+
+   # Ask the user if they want to filter the packages
+   FILTER=$(gum input --prompt "Enter text to filter the installed packages or blank:" \
+       --placeholder="e.g. ssh" --value=" " --header.foreground="$COLOR")
+
+   # Test if there is a filter and if so then clean up working file the
+   # Prompt for package selections - any number allowed
+   # but first only use the package name
+   if [ ! -z $FILTER ]; then
+      grep -i $FILTER $TEMP > $TEMPW
+      SELECTED=$(cat "$TEMPW"| cut -d " " -f1  | \
+      gum choose --no-limit \
+     --header "Select packages to remove" --header.foreground="$COLOR")
+   else
+     SELECTED=$(cat "$TEMP"| tail -n +2 | cut -d " " -f1  | \
+        gum choose --no-limit \
+       --header "Select packages to remove" --header.foreground="$COLOR")
+   fi
+
+   # Test if any packages selected - must have at least one
+   if [ -z "$SELECTED" ]; then
+       echo "No selections - exiting...."
+       exit 0
+   fi
+
+   # Remove the work files
+   rm $TEMP
+
+   # Generate the zopen remove command
+   REMOVE="zopen remove -y $SELECTED"
+
+   # report what we have generated for the user
+   echo -e "Generated command: \n$REMOVE"
+
+   # If gum confirm Yes then process the next command
+   gum confirm "Execute Generated zopen remove:" && $REMOVE && $MANDB
+   exit 0
+   ;;
+esac
+
+echo "$ZOT selected but sadly that command has not been implemented within"
+echo "the zothelper as yet."
