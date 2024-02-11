@@ -51,14 +51,15 @@ It may be invoked one of two ways:
 
 **Note** The use of `mandb` to update the man page database is highly (strongly) recommended.
 
-## zotinstall
+## zothelper
 
-This tool demonstrates constructing a zopen install command by prompting for the
-packages to install and then perform a `mandb` if enabled.
+This tools will prompt for one of the available `zopen` options and then construct the 
+appropriate command.
 
-## zotremove
+If the selected command is not support by `zothelper` then the commands help will be displaywed.
 
-The reverse of zopen_install to remove packages.
+Currently `clean`, `install`, and `remove` are supported.
+
 
 ## tspin
 
