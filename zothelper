@@ -201,3 +201,7 @@ esac
 
 echo "$ZOT selected but sadly that command has not been implemented within"
 echo "the zothelper as yet."
+echo ' '
+echo 'Here is the help information for the command to help for now:'
+echo ' '
+zopen $ZOT -h
