@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-VER='0.05'
+VER='0.06'
 clear
 
 #---------------------------------------------------#
@@ -14,9 +14,13 @@ clear
 #                                                   #
 # Author/Contributors:                              #
 #   Lionel B. Dyck (lbdyck@gmail.com)               #
+#   Igor Todorovski                                 #
 #                                                   #
 # Change History (current on top):                  #
+#   2024/02/12 LBD - 0.06 Major refinement (thx IT) #
+#                         Move remove to subroutine #
 #   2024/02/12 IT  - 0.05 Esc to go back            #
+#                         Move install to subroutine#
 #   2024/02/12 LBD - 0.04 Remove extraneous newlines#
 #                         from echos                #
 #   2024/02/12 LBD - 0.03 Enhance clean options     #
@@ -56,7 +60,7 @@ SPIN="line"
 #SPIN="hamburger"
 
 #----------------------------------------------------------#
-# Define out temp and tempw variables                      #
+# Define our temp and tempw variables                      #
 #----------------------------------------------------------#
 TEMP="/tmp/zopen_list"
 TEMPW="/tmp/zopen_listw"
@@ -83,29 +87,19 @@ export _TAG_REDIR_IN=txt
 export _TAG_REDIR_OUT=txt
 export _TAG_REDIR_ERR=txt
 
-# Display our banner
-gum style \
-   --foreground $COLOR --border-foreground $COLOR --border double \
-   --align center --width 50 --margin "1 2" --padding "2 4" \
-   'z/OS Open Tools Helper' $VER
+#----------------------------------------------------------#
+# Define our gum choose prompt text                        #
+#----------------------------------------------------------#
+HEADSEL="(ESC: back, Tab/Space: Toggle select, Up/Down: Navigate, Enter: Submit):"
 
 #----------------------------------------------------------#
-# Prompt the user for the zopen options                    #
+# Common Routines - do a Find for ##Start for the start    #
+#                   of the actual code                     #
 #----------------------------------------------------------#
-ZOT=$(zopen help | sed -n '/Command:/,/Options:/ {//!p}' | \
-    gum choose --header.foreground="$COLOR" \
-    --height=18 \
-    --header "Select zopen command (may need to scroll):")
-ZOT=$(echo $ZOT | cut -d " " -f1 )
 
 #----------------------------------------------------------#
-# Test for any selections                                  #
+# routine for the zopen install option                     #
 #----------------------------------------------------------#
-if [ -z "$ZOT" ]; then
-   echo 'No selections made - exiting . . .'
-   exit 0
-fi
-
 install()
 {
    # spinning something while we collect the list of all available packages
@@ -133,15 +127,15 @@ install()
    SELECTED=$(cat "$TEMP" | \
      gum choose --no-limit \
      --height=18 \
-     --header "Select packages to install" --header.foreground="$COLOR")
+     --header "Select packages to install $HEADSEL" --header.foreground="$COLOR")
    RC=$?
 
    # Remove the work files
    rm $TEMP
 
    # Escape pressed, go back to the beginning
-   if [ $RC -eq 130 ]; then
-      install  
+   if [ "$RC" -eq 130 ] ; then
+      install
    fi
 
    # Test if any packages selected - must have at least one
@@ -164,6 +158,91 @@ install()
 }
 
 #----------------------------------------------------------#
+# routine for the zopen remove option                      #
+#----------------------------------------------------------#
+remove()
+{
+   # spinning something while we collect the list of all available packages
+   gum spin --title "Generating list of all installed packages" -s "$SPIN" \
+     --show-output --spinner.foreground="$COLOR" --title.foreground="$COLOR" \
+     -- zopen query --installed > "$TEMP"
+
+   # Ask the user if they want to filter the packages
+   FILTER=$(gum input --prompt "Enter text to filter the installed packages or blank:" \
+       --placeholder="e.g. ssh" --value=" " --header.foreground="$COLOR")
+
+   # Test if there is a filter and if so then clean up working file the
+   # Prompt for package selections - any number allowed
+   # but first only use the package name
+   if [ ! -z $FILTER ]; then
+      grep -i $FILTER $TEMP > $TEMPW
+      SELECTED=$(cat "$TEMPW"| cut -d " " -f1  | \
+      gum choose --no-limit \
+      --height=18 \
+     --header "Select packages to remove $HEADSEL" --header.foreground="$COLOR")
+   else
+     SELECTED=$(cat "$TEMP"| tail -n +2 | cut -d " " -f1  | \
+        gum choose --no-limit \
+       --header "Select packages to remove $HEADSEL" --header.foreground="$COLOR")
+   fi
+   RC=$?
+
+   # Escape pressed, go back to the beginning
+   if [ "$RC" -eq 130 ] ; then
+      remove
+   fi
+
+   # Test if any packages selected - must have at least one
+   if [ -z "$SELECTED" ]; then
+       echo "No selections - exiting...."
+       exit 0
+   fi
+
+   # Remove the work files
+   rm $TEMP
+
+   # Remove new line from SELECTED variable
+   SELECTED=$(echo "$SELECTED" | tr '\n' ' ')
+
+   # Generate the zopen remove command
+   REMOVE="zopen remove -y $SELECTED"
+
+   # report what we have generated for the user
+   echo -e "Generated command: \n$REMOVE"
+
+   # If gum confirm Yes then process the next command
+   gum confirm "Execute Generated zopen remove:" && $REMOVE && $MANDB
+   exit 0
+}
+
+##Start of the working code
+
+#----------------------#
+# Display our banner   #
+#----------------------#
+gum style \
+   --foreground $COLOR --border-foreground $COLOR --border double \
+   --align center --width 50 --margin "1 2" --padding "2 4" \
+   'z/OS Open Tools Helper' $VER
+
+#----------------------------------------------------------#
+# Prompt the user for the zopen options                    #
+#----------------------------------------------------------#
+ZOT=$(zopen help | sed -n '/Command:/,/Options:/ {//!p}' | \
+    gum choose --header.foreground="$COLOR" \
+    --height=18 \
+    --header "Select zopen command $HEADSEL")
+ZOT=$(echo $ZOT | cut -d " " -f1 )
+
+#----------------------------------------------------------#
+# Test for any selections                                  #
+#----------------------------------------------------------#
+if [ -z "$ZOT" ]; then
+   echo 'No selections made - exiting . . .'
+   exit 0
+fi
+
+#----------------------------------------------------------#
 # Process the Selected Command                             #
 #----------------------------------------------------------#
 case "$ZOT" in
@@ -172,7 +251,7 @@ case "$ZOT" in
 #----------------------------------------------------------#
   clean )
     CLEAN=$(gum choose "cache" "dangling" "metadata" "unused" "all" \
-       --no-limit --header="Select zopen clean option:" \
+       --no-limit --header="Select zopen clean option $HEADSEL" \
        --height=18 \
        --header.foreground="$COLOR")
 
@@ -202,53 +281,9 @@ case "$ZOT" in
 # Remove any installed packages                            #
 #----------------------------------------------------------#
   remove )
+  remove
+  ;;
 
-   # spinning something while we collect the list of all available packages
-   gum spin --title "Generating list of all installed packages" -s "$SPIN" \
-     --show-output --spinner.foreground="$COLOR" --title.foreground="$COLOR" \
-     -- zopen query --installed > "$TEMP"
-
-   # Ask the user if they want to filter the packages
-   FILTER=$(gum input --prompt "Enter text to filter the installed packages or blank:" \
-       --placeholder="e.g. ssh" --value=" " --header.foreground="$COLOR")
-
-   # Test if there is a filter and if so then clean up working file the
-   # Prompt for package selections - any number allowed
-   # but first only use the package name
-   if [ ! -z $FILTER ]; then
-      grep -i $FILTER $TEMP > $TEMPW
-      SELECTED=$(cat "$TEMPW"| cut -d " " -f1  | \
-      gum choose --no-limit \
-      --height=18 \
-     --header "Select packages to remove" --header.foreground="$COLOR")
-   else
-     SELECTED=$(cat "$TEMP"| tail -n +2 | cut -d " " -f1  | \
-        gum choose --no-limit \
-       --header "Select packages to remove" --header.foreground="$COLOR")
-   fi
-
-   # Test if any packages selected - must have at least one
-   if [ -z "$SELECTED" ]; then
-       echo "No selections - exiting...."
-       exit 0
-   fi
-
-   # Remove the work files
-   rm $TEMP
-
-   # Remove new line from SELECTED variable
-   SELECTED=$(echo "$SELECTED" | tr '\n' ' ')
-
-   # Generate the zopen remove command
-   REMOVE="zopen remove -y $SELECTED"
-
-   # report what we have generated for the user
-   echo -e "Generated command: \n$REMOVE"
-
-   # If gum confirm Yes then process the next command
-   gum confirm "Execute Generated zopen remove:" && $REMOVE && $MANDB
-   exit 0
-   ;;
   upgrade )
 
    UPGRADE="zopen upgrade -y"
@@ -268,3 +303,4 @@ echo ' '
 echo 'Here is the help information for the command to help for now:'
 echo ' '
 zopen $ZOT -h
+exit 0
