@@ -115,6 +115,11 @@ case "$ZOT" in
        --no-limit)
     CLEAN=$(echo "$CLEAN" | sed 's/all/--all/g')
     CLEAN=$(echo "$CLEAN" | sed 's/\b\(\w\)\b/-\1/g' | cut -d " " -f1 )
+
+    if [ -z "$CLEAN" ]; then
+       CLEAN="--all"
+    fi
+
     CLEAN="zopen clean $CLEAN"
 
     echo -e "Generated command: \n$CLEAN"
