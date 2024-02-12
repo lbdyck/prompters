@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-VER='0.06'
+VER='0.07'
 clear
 
 #---------------------------------------------------#
@@ -17,6 +17,7 @@ clear
 #   Igor Todorovski                                 #
 #                                                   #
 # Change History (current on top):                  #
+#   2024/02/12 LBD - 0.07 Don't default clean to all#
 #   2024/02/12 LBD - 0.06 Major refinement (thx IT) #
 #                         Move remove to subroutine #
 #   2024/02/12 IT  - 0.05 Esc to go back            #
@@ -256,7 +257,8 @@ case "$ZOT" in
        --header.foreground="$COLOR")
 
     if [ -z "$CLEAN" ]; then
-       CLEAN="all"
+       echo "No clean option selected - terminating..."
+       exit 0
     fi
 
     CLEAN=$(echo "$CLEAN" | sed -e 's/[^ ]*/--&/' -e 's/^-- //' | tr '\n' ' ')
