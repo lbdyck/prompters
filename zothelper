@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-VER='0.04'
+VER='0.05'
 clear
 
 #---------------------------------------------------#
@@ -16,6 +16,7 @@ clear
 #   Lionel B. Dyck (lbdyck@gmail.com)               #
 #                                                   #
 # Change History (current on top):                  #
+#   2024/02/12 IT  - 0.05 Esc to go back            #
 #   2024/02/12 LBD - 0.04 Remove extraneous newlines#
 #                         from echos                #
 #   2024/02/12 LBD - 0.03 Enhance clean options     #
@@ -105,6 +106,63 @@ if [ -z "$ZOT" ]; then
    exit 0
 fi
 
+install()
+{
+   # spinning something while we collect the list of all available packages
+   gum spin --title "Generating list of available packages" -s "$SPIN" \
+     --show-output --spinner.foreground="$COLOR" --title.foreground="$COLOR" \
+     -- zopen query --list > "$TEMP"
+
+   # Ask the user if they want to filter the packages
+   FILTER=$(gum input --prompt "Enter text to filter the available packages or blank:" \
+       --placeholder="e.g. ssh" --value=" " --header.foreground="$COLOR")
+
+   # Test if there is a filter and if so then clean up working file
+   if [ ! -z $FILTER ]; then
+      grep -i $FILTER $TEMP > $TEMPW
+      mv -f "$TEMPW" "$TEMP"
+   fi
+   cat "$TEMP" | grep Not | cut -d " " -f1  > "$TEMPW"
+   #If you want to handle an option to return:
+   #echo "Return..."  >> "$TEMPW"
+   mv -f "$TEMPW" "$TEMP"
+
+   # Prompt for package selections - any number allowed
+   # but first remove all installed packages and only use
+   # the package name
+   SELECTED=$(cat "$TEMP" | \
+     gum choose --no-limit \
+     --height=18 \
+     --header "Select packages to install" --header.foreground="$COLOR")
+   RC=$?
+
+   # Remove the work files
+   rm $TEMP
+
+   # Escape pressed, go back to the beginning
+   if [ $RC -eq 130 ]; then
+      install  
+   fi
+
+   # Test if any packages selected - must have at least one
+   if [ -z "$SELECTED" ]; then
+       echo "No selections - exiting...."
+       exit 0
+   fi
+   # Remove new line from SELECTED variable
+   SELECTED=$(echo "$SELECTED" | tr '\n' ' ')
+
+   # Generate the zopen install command
+   INSTALL="zopen install -y $SELECTED"
+
+   # report what we have generated for the user
+   echo -e "Generated command: \n$INSTALL"
+
+   # If gum confirm Yes then process the next command
+   gum confirm "Execute Generated zopen install:" && $INSTALL && $MANDB
+   exit 0
+}
+
 #----------------------------------------------------------#
 # Process the Selected Command                             #
 #----------------------------------------------------------#
@@ -137,50 +195,7 @@ case "$ZOT" in
 # install available packages                               #
 #----------------------------------------------------------#
   install )
-   # spinning something while we collect the list of all available packages
-   gum spin --title "Generating list of available packages" -s "$SPIN" \
-     --show-output --spinner.foreground="$COLOR" --title.foreground="$COLOR" \
-     -- zopen query --list > "$TEMP"
-
-   # Ask the user if they want to filter the packages
-   FILTER=$(gum input --prompt "Enter text to filter the available packages or blank:" \
-       --placeholder="e.g. ssh" --value=" " --header.foreground="$COLOR")
-
-   # Test if there is a filter and if so then clean up working file
-   if [ ! -z $FILTER ]; then
-      grep -i $FILTER $TEMP > $TEMPW
-      mv -f "$TEMPW" "$TEMP"
-   fi
-
-   # Prompt for package selections - any number allowed
-   # but first remove all installed packages and only use
-   # the package name
-   SELECTED=$(cat "$TEMP"| grep Not | cut -d " " -f1  | \
-     gum choose --no-limit \
-     --height=18 \
-     --header "Select packages to install" --header.foreground="$COLOR")
-
-   # Test if any packages selected - must have at least one
-   if [ -z "$SELECTED" ]; then
-       echo "No selections - exiting...."
-       exit 0
-   fi
-
-   # Remove the work files
-   rm $TEMP
-
-   # Remove new line from SELECTED variable
-   SELECTED=$(echo "$SELECTED" | tr '\n' ' ')
-
-   # Generate the zopen install command
-   INSTALL="zopen install -y $SELECTED"
-
-   # report what we have generated for the user
-   echo -e "Generated command: \n$INSTALL"
-
-   # If gum confirm Yes then process the next command
-   gum confirm "Execute Generated zopen install:" && $INSTALL && $MANDB
-   exit 0
+   install
    ;;
 
 #----------------------------------------------------------#
