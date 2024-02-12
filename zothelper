@@ -111,18 +111,18 @@ case "$ZOT" in
 # zopen clean command - use all the options                #
 #----------------------------------------------------------#
   clean )
-    CLEAN=$(gum choose "c cache" "d dangling" "m metadata" "u unused" "all" \
+    CLEAN=$(gum choose "cache" "dangling" "metadata" "unused" "all" \
        --no-limit --header="Select zopen clean option:" \
        --height=18 \
        --header.foreground="$COLOR")
-    CLEAN=$(echo "$CLEAN" | sed 's/all/--all/g')
-    CLEAN=$(echo "$CLEAN" | sed 's/\b\(\w\)\b/-\1/g' | cut -d " " -f1 )
 
     if [ -z "$CLEAN" ]; then
-       CLEAN="--all"
+       CLEAN="all"
     fi
 
-    CLEAN="zopen clean $CLEAN"
+    CLEAN=$(echo "$CLEAN" | sed -e 's/[^ ]*/--&/' -e 's/^-- //')
+
+    CLEAN="zopen clean $CLEAN --verbose"
 
     echo -e "Generated command: \n$CLEAN"
 
