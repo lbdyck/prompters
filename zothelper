@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-VER='0.02'
+VER='0.03'
 clear
 
 #---------------------------------------------------#
@@ -16,6 +16,7 @@ clear
 #   Lionel B. Dyck (lbdyck@gmail.com)               #
 #                                                   #
 # Change History (current on top):                  #
+#   2024/02/12 LBD - 0.03 Enhance clean options     #
 #   2024/02/11 LBD - 0.02 Add zopen upgrade         #
 #   2024/02/11 LBD - 0.01 Creation                  #
 #---------------------------------------------------#
@@ -110,8 +111,16 @@ case "$ZOT" in
 # zopen clean command - use all the options                #
 #----------------------------------------------------------#
   clean )
-    echo "Performing zopen clean"
-    zopen clean -c -d -m -u -v --version
+    CLEAN=$(gum choose "c cache" "d dangling" "m metadata" "u unused" "all" \
+       --no-limit)
+    CLEAN=$(echo "$CLEAN" | sed 's/all/--all/g')
+    CLEAN=$(echo "$CLEAN" | sed 's/\b\(\w\)\b/-\1/g' | cut -d " " -f1 )
+    CLEAN="zopen clean $CLEAN"
+
+    echo -e "Generated command: \n$CLEAN"
+
+    # If gum confirm Yes then process the next command
+    gum confirm "Execute Generated zopen command:" && $CLEAN
     exit 0
     ;;
 
