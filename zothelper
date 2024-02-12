@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-VER='0.03'
+VER='0.04'
 clear
 
 #---------------------------------------------------#
@@ -16,6 +16,8 @@ clear
 #   Lionel B. Dyck (lbdyck@gmail.com)               #
 #                                                   #
 # Change History (current on top):                  #
+#   2024/02/12 LBD - 0.04 Remove extraneous newlines#
+#                         from echos                #
 #   2024/02/12 LBD - 0.03 Enhance clean options     #
 #   2024/02/11 LBD - 0.02 Add zopen upgrade         #
 #   2024/02/11 LBD - 0.01 Creation                  #
@@ -120,7 +122,7 @@ case "$ZOT" in
        CLEAN="all"
     fi
 
-    CLEAN=$(echo "$CLEAN" | sed -e 's/[^ ]*/--&/' -e 's/^-- //')
+    CLEAN=$(echo "$CLEAN" | sed -e 's/[^ ]*/--&/' -e 's/^-- //' | tr '\n' ' ')
 
     CLEAN="zopen clean $CLEAN --verbose"
 
@@ -166,6 +168,9 @@ case "$ZOT" in
 
    # Remove the work files
    rm $TEMP
+
+   # Remove new line from SELECTED variable
+   SELECTED=$(echo "$SELECTED" | tr '\n' ' ')
 
    # Generate the zopen install command
    INSTALL="zopen install -y $SELECTED"
@@ -215,6 +220,9 @@ case "$ZOT" in
 
    # Remove the work files
    rm $TEMP
+
+   # Remove new line from SELECTED variable
+   SELECTED=$(echo "$SELECTED" | tr '\n' ' ')
 
    # Generate the zopen remove command
    REMOVE="zopen remove -y $SELECTED"
