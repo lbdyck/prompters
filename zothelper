@@ -112,7 +112,9 @@ case "$ZOT" in
 #----------------------------------------------------------#
   clean )
     CLEAN=$(gum choose "c cache" "d dangling" "m metadata" "u unused" "all" \
-       --no-limit)
+       --no-limit --header="Select zopen clean option:" \
+       --height=18 \
+       --header.foreground="$COLOR")
     CLEAN=$(echo "$CLEAN" | sed 's/all/--all/g')
     CLEAN=$(echo "$CLEAN" | sed 's/\b\(\w\)\b/-\1/g' | cut -d " " -f1 )
 
@@ -153,6 +155,7 @@ case "$ZOT" in
    # the package name
    SELECTED=$(cat "$TEMP"| grep Not | cut -d " " -f1  | \
      gum choose --no-limit \
+     --height=18 \
      --header "Select packages to install" --header.foreground="$COLOR")
 
    # Test if any packages selected - must have at least one
@@ -196,6 +199,7 @@ case "$ZOT" in
       grep -i $FILTER $TEMP > $TEMPW
       SELECTED=$(cat "$TEMPW"| cut -d " " -f1  | \
       gum choose --no-limit \
+      --height=18 \
      --header "Select packages to remove" --header.foreground="$COLOR")
    else
      SELECTED=$(cat "$TEMP"| tail -n +2 | cut -d " " -f1  | \
