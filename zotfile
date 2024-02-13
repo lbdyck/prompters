@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VER='0.02'
+VER='0.03'
 
 #> This is work in progress any/all help appreciated
 
@@ -11,12 +11,16 @@ VER='0.02'
 #                                                   #
 # Dependencies: gum                                 #
 #                                                   #
-# Syntax:  zotfile                                  #
+# Syntax:  zotfile directory                        #
+#                                                   #
+#          directory - where to start               #
+#                      default=$HOME                #
 #                                                   #
 # Author/Contributors:                              #
 #   Lionel B. Dyck (lbdyck@gmail.com)               #
 #                                                   #
 # Change History (current on top):                  #
+#   2024/02/13 LBD - 0.03 Allow starting location   #
 #   2024/02/13 LBD - 0.02 Make it work (mostly)     #
 #   2024/02/13 LBD - 0.01 Creation                  #
 #---------------------------------------------------#
@@ -38,13 +42,17 @@ COLOR=51
 #----------------------------------------------------------------#
 # Define defaults                                                #
 #----------------------------------------------------------------#
-DIR="."
 EDITOR="vim"
 VIEWER="gum pager"
 
+if [ -z "$1" ]; then
+   DIR="$HOME"
+ else
+   DIR=$1
+fi
+
 doit()
 {
-echo "directory $DIR"
 FP=$(gum file $DIR --directory.foreground="$COLOR")
 RC=$?
 
@@ -67,7 +75,6 @@ fi
 case $OPT in
   Edit )
   cd $DIR
-  echo $EDITOR $FILE
   $EDITOR $FILE
   doit
   ;;
