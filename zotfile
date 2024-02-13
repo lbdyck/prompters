@@ -1,0 +1,97 @@
+#!/bin/sh
+
+VER='0.02'
+
+#> This is work in progress any/all help appreciated
+
+#---------------------------------------------------#
+# Name: zotfile                                     #
+#                                                   #
+# Purpose: Simple filesystem viewer                 #
+#                                                   #
+# Dependencies: gum                                 #
+#                                                   #
+# Syntax:  zotfile                                  #
+#                                                   #
+# Author/Contributors:                              #
+#   Lionel B. Dyck (lbdyck@gmail.com)               #
+#                                                   #
+# Change History (current on top):                  #
+#   2024/02/13 LBD - 0.02 Make it work (mostly)     #
+#   2024/02/13 LBD - 0.01 Creation                  #
+#---------------------------------------------------#
+# Repository: github.com/lbdyck/prompters           #
+#---------------------------------------------------#
+# Copyleft by Lionel B. Dyck 2024                   #
+#---------------------------------------------------#
+
+#----------------------------------------------------------------#
+# Define the color for the banner                                #
+#  5 - purple                                                    #
+# 12 - blue shade                                                #
+# 33 - darker blue                                               #
+# 46 - green                                                     #
+# 51 - turq shade                                                #
+#----------------------------------------------------------------#
+COLOR=51
+
+#----------------------------------------------------------------#
+# Define defaults                                                #
+#----------------------------------------------------------------#
+DIR="."
+EDITOR="vim"
+VIEWER="gum pager"
+
+doit()
+{
+echo "directory $DIR"
+FP=$(gum file $DIR --directory.foreground="$COLOR")
+RC=$?
+
+if [ "$RC" -eq 130 ] ; then
+   echo "Escape entered - exiting. . . "
+   exit 0
+fi
+
+DIR=$(dirname "$FP")
+FILE=$(basename "$FP")
+
+OPT=$(gum choose 'Edit' 'View' --header.foreground="$COLOR" \
+    --header="Select file processing option or Escape to cancel; left arrow to move up the tree.")
+RC=$?
+
+if [ "$RC" -eq 130 ] ; then
+   doit
+fi
+
+case $OPT in
+  Edit )
+  cd $DIR
+  echo $EDITOR $FILE
+  $EDITOR $FILE
+  doit
+  ;;
+
+  View )
+  cd $DIR
+  cat $FILE | $VIEWER
+  doit
+  ;;
+esac
+}
+
+##Start of the working code
+
+#----------------------#
+# Display our banner   #
+#----------------------#
+clear
+gum style \
+   --foreground $COLOR --border-foreground $COLOR --border double \
+   --align center --width 50 --margin "1 2" --padding "2 4" \
+   'z/OS Open Tools File Helper' $VER
+
+#-------------------#
+# Now actually DoIt #
+#-------------------#
+doit
