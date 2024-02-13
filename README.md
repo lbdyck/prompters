@@ -60,6 +60,11 @@ If the selected command is not support by `zothelper` then the commands help wil
 
 Currently `clean`, `install`, and `remove` are supported.
 
+## zotfile
+
+This is very much a work in progress. A swag at a easy to use file manager for the shell user
+using `gum`. It is definitely a *use at your own risk* and any/all comments/suggestions/contributions
+are welcome.
 
 ## [tspin](tspin)
 
