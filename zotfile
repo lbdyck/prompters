@@ -40,6 +40,15 @@ VER='0.03'
 COLOR=51
 
 #----------------------------------------------------------------#
+# Define export values that we need to look nice                 #
+#----------------------------------------------------------------#
+
+export GUM_INPUT_PROMPT_FOREGROUND="#$COLOR"
+export GUM_INPUT_PLACEHOLDER=". . ."
+export GUM_IMPORT_PROMPT="* "
+export TERM=xterm-256color
+
+#----------------------------------------------------------------#
 # Define defaults                                                #
 #----------------------------------------------------------------#
 EDITOR="vim"
