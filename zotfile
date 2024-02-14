@@ -69,7 +69,8 @@ banner
 
 gum style \
    --foreground $COLOR --border-foreground $COLOR  \
-   'Navigate left: go up dir, right select dir, enter select file'
+   'Navigate left: go up dir, right select dir, enter select file or q to exit.' \
+   'Scroll using up/down arrows.'
 
 FP=$(gum file $DIR --height=20 --all --directory.foreground="$COLOR")
 RC=$?
