@@ -84,7 +84,7 @@ DIR=$(dirname "$FP")
 FILE=$(basename "$FP")
 
 OPT=$(gum choose 'Edit' 'View' --header.foreground="$COLOR" \
-    --header="Select file processing option or Escape to cancel; left arrow to move up the tree.")
+    --header="File $FP selected. Select file processing option or Escape to cancel; left arrow to move up the tree.")
 RC=$?
 
 if [ "$RC" -eq 130 ] ; then
