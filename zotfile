@@ -115,7 +115,10 @@ clear
 gum style \
    --foreground $COLOR --border-foreground $COLOR --border double \
    --align center --width 50 --margin "1 2" --padding "2 4" \
-   'z/OS Open Tools File Helper' $VER
+   'z/OS Open Tools File Helper' $VER \
+   " " \
+   "Editor: $EDITOR" \
+   "Viewer: $VIEWER"
 }
 
 ##Start of the working code
