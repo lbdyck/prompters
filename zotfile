@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VER='0.03'
+VER='0.04'
 
 #> This is work in progress any/all help appreciated
 
@@ -18,8 +18,10 @@ VER='0.03'
 #                                                   #
 # Author/Contributors:                              #
 #   Lionel B. Dyck (lbdyck@gmail.com)               #
+#   Igor Todorovski                                 #
 #                                                   #
 # Change History (current on top):                  #
+#   2024/02/14 LBD - 0.04 Improve messages          #
 #   2024/02/13 LBD - 0.03 Allow starting location   #
 #   2024/02/13 LBD - 0.02 Make it work (mostly)     #
 #   2024/02/13 LBD - 0.01 Creation                  #
@@ -62,7 +64,14 @@ fi
 
 doit()
 {
-FP=$(gum file $DIR --directory.foreground="$COLOR")
+
+banner
+
+gum style \
+   --foreground $COLOR --border-foreground $COLOR  \
+   'Navigate left: go up dir, right select dir, enter select file'
+
+FP=$(gum file $DIR --height=20 --all --directory.foreground="$COLOR")
 RC=$?
 
 if [ "$RC" -eq 130 ] ; then
@@ -96,18 +105,22 @@ case $OPT in
 esac
 }
 
-##Start of the working code
-
 #----------------------#
 # Display our banner   #
 #----------------------#
+banner ()
+{
 clear
 gum style \
    --foreground $COLOR --border-foreground $COLOR --border double \
    --align center --width 50 --margin "1 2" --padding "2 4" \
    'z/OS Open Tools File Helper' $VER
+}
+
+##Start of the working code
 
 #-------------------#
 # Now actually DoIt #
 #-------------------#
+
 doit
