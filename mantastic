@@ -1,6 +1,6 @@
 #!/bin/sh
 clear
-VER="0.27"
+VER="0.28"
 
 #----------------------------------------------------------------#
 # Name: mantastic                                                #
@@ -26,6 +26,7 @@ VER="0.27"
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
 #                                                                #
 # Change History (top down):                                     #
+#    2024/02/15 LBD - 0.28 Remove the color option (not needed)  #
 #    2024/02/11 LBD - 0.27 Change prompt to use keyword instead  #
 #                          of string to be more accurate         #
 #                          Allow only arg to be number to test   #
@@ -78,15 +79,6 @@ PAGER="gum pager"
 #       color may be unreadable                                  #
 #----------------------------------------------------------------#
 COLOR=51
-
-#----------------------------------------------------------------#
-# Allow passing a color as the only argument to test colors      #
-#----------------------------------------------------------------#
-if [ "$1" -ge 1 ] && [ "$1" -le 999 ]; then
-   COLOR=$1
-   1=""
-   set --
-fi
 
 export GUM_INPUT_PROMPT_FOREGROUND="#$COLOR"
 export GUM_INPUT_PLACEHOLDER=". . ."
