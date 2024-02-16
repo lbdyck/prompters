@@ -14,7 +14,7 @@ VER="0.29"
 #                     in the man database                        #
 #          -d         will just display the man page             #
 #                     the specific man command                   #
-#          -h, -help  display help information                   #
+#          ?, -h, -help  display help information                #
 #                                                                #
 # Dependencies:  gum plus less or more                           #
 #                mandb - must be run after any install/upgrade   #
