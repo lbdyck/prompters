@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-VER='0.07'
+VER='0.08'
 clear
 
 #---------------------------------------------------#
@@ -17,6 +17,7 @@ clear
 #   Igor Todorovski                                 #
 #                                                   #
 # Change History (current on top):                  #
+#   2024/02/17 LBD - 0.08 Support zopen list/query  #
 #   2024/02/12 LBD - 0.07 Don't default clean to all#
 #   2024/02/12 LBD - 0.06 Major refinement (thx IT) #
 #                         Move remove to subroutine #
@@ -216,6 +217,53 @@ remove()
    exit 0
 }
 
+#------------------------------#
+# Routine for zopen list       #
+#------------------------------#
+list()
+{
+
+   LIST=$(gum choose "list" "remote-search" "installed" \
+     --header "Select list option" --header.foreground="$COLOR")
+   RC=$?
+
+   # Escape pressed then exit
+   if [ "$RC" -eq 130 ] ; then
+      exit
+   fi
+
+   #-------------------#
+   # update list parm  #
+   #-------------------#
+   FILTER=''
+   case "$LIST" in
+     list)
+     LIST="--list"
+     ;;
+     remote-search)
+     LIST="--remote-search"
+     FILTER=1
+     ;;
+     installed)
+     LIST="--installed"
+     ;;
+   esac
+
+   if [ "$FILTER" == 1 ]; then
+      ARG=$(gum input --prompt "Enter a package name or prefix to search for:" \
+          --placeholder="e.g. ssh" --value=" " --header.foreground="$COLOR")
+     LIST="$LIST $ARG"
+   fi
+
+   # spinning something while we collect the list of all available packages
+   gum spin --title "Generating list results" -s "$SPIN" \
+     --show-output --spinner.foreground="$COLOR" --title.foreground="$COLOR" \
+     -- zopen list "$LIST" -d > "$TEMP"
+   cat "$TEMP" | gum pager
+   rm "$TEMP"
+exit 0
+}
+
 ##Start of the working code
 
 #----------------------#
@@ -286,6 +334,23 @@ case "$ZOT" in
   remove
   ;;
 
+#----------------------------------------------------------#
+# List packages                                            #
+#----------------------------------------------------------#
+  list )
+  list
+  ;;
+
+#----------------------------------------------------------#
+# Query packages  (alias of list)                          #
+#----------------------------------------------------------#
+  query )
+  list
+  ;;
+
+#----------------------------------------------------------#
+# Upgrade any installed packages                           #
+#----------------------------------------------------------#
   upgrade )
 
    UPGRADE="zopen upgrade -y"
