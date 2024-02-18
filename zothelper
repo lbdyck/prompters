@@ -1,7 +1,6 @@
 #!/bin/env bash
 
-VER='0.08'
-clear
+VER='0.09'
 
 #---------------------------------------------------#
 # Name: zothelper                                   #
@@ -17,6 +16,7 @@ clear
 #   Igor Todorovski                                 #
 #                                                   #
 # Change History (current on top):                  #
+#   2024/02/18 LBD - 0.09 Major restructure         #
 #   2024/02/17 LBD - 0.08 Support zopen list/query  #
 #   2024/02/12 LBD - 0.07 Don't default clean to all#
 #   2024/02/12 LBD - 0.06 Major refinement (thx IT) #
@@ -99,176 +99,12 @@ HEADSEL="(ESC: back, Tab/Space: Toggle select, Up/Down: Navigate, Enter: Submit)
 #                   of the actual code                     #
 #----------------------------------------------------------#
 
-#----------------------------------------------------------#
-# routine for the zopen install option                     #
-#----------------------------------------------------------#
-install()
-{
-   # spinning something while we collect the list of all available packages
-   gum spin --title "Generating list of available packages" -s "$SPIN" \
-     --show-output --spinner.foreground="$COLOR" --title.foreground="$COLOR" \
-     -- zopen query --list > "$TEMP"
-
-   # Ask the user if they want to filter the packages
-   FILTER=$(gum input --prompt "Enter text to filter the available packages or blank:" \
-       --placeholder="e.g. ssh" --value=" " --header.foreground="$COLOR")
-
-   # Test if there is a filter and if so then clean up working file
-   if [ ! -z $FILTER ]; then
-      grep -i $FILTER $TEMP > $TEMPW
-      mv -f "$TEMPW" "$TEMP"
-   fi
-   cat "$TEMP" | grep Not | cut -d " " -f1  > "$TEMPW"
-   #If you want to handle an option to return:
-   #echo "Return..."  >> "$TEMPW"
-   mv -f "$TEMPW" "$TEMP"
-
-   # Prompt for package selections - any number allowed
-   # but first remove all installed packages and only use
-   # the package name
-   SELECTED=$(cat "$TEMP" | \
-     gum choose --no-limit \
-     --height=18 \
-     --header "Select packages to install $HEADSEL" --header.foreground="$COLOR")
-   RC=$?
-
-   # Remove the work files
-   rm $TEMP
-
-   # Escape pressed, go back to the beginning
-   if [ "$RC" -eq 130 ] ; then
-      install
-   fi
-
-   # Test if any packages selected - must have at least one
-   if [ -z "$SELECTED" ]; then
-       echo "No selections - exiting...."
-       exit 0
-   fi
-   # Remove new line from SELECTED variable
-   SELECTED=$(echo "$SELECTED" | tr '\n' ' ')
-
-   # Generate the zopen install command
-   INSTALL="zopen install -y $SELECTED"
-
-   # report what we have generated for the user
-   echo -e "Generated command: \n$INSTALL"
-
-   # If gum confirm Yes then process the next command
-   gum confirm "Execute Generated zopen install:" && $INSTALL && $MANDB
-   exit 0
-}
-
-#----------------------------------------------------------#
-# routine for the zopen remove option                      #
-#----------------------------------------------------------#
-remove()
-{
-   # spinning something while we collect the list of all available packages
-   gum spin --title "Generating list of all installed packages" -s "$SPIN" \
-     --show-output --spinner.foreground="$COLOR" --title.foreground="$COLOR" \
-     -- zopen query --installed > "$TEMP"
-
-   # Ask the user if they want to filter the packages
-   FILTER=$(gum input --prompt "Enter text to filter the installed packages or blank:" \
-       --placeholder="e.g. ssh" --value=" " --header.foreground="$COLOR")
-
-   # Test if there is a filter and if so then clean up working file the
-   # Prompt for package selections - any number allowed
-   # but first only use the package name
-   if [ ! -z $FILTER ]; then
-      grep -i $FILTER $TEMP > $TEMPW
-      SELECTED=$(cat "$TEMPW"| cut -d " " -f1  | \
-      gum choose --no-limit \
-      --height=18 \
-     --header "Select packages to remove $HEADSEL" --header.foreground="$COLOR")
-   else
-     SELECTED=$(cat "$TEMP"| tail -n +2 | cut -d " " -f1  | \
-        gum choose --no-limit \
-       --header "Select packages to remove $HEADSEL" --header.foreground="$COLOR")
-   fi
-   RC=$?
-
-   # Escape pressed, go back to the beginning
-   if [ "$RC" -eq 130 ] ; then
-      remove
-   fi
-
-   # Test if any packages selected - must have at least one
-   if [ -z "$SELECTED" ]; then
-       echo "No selections - exiting...."
-       exit 0
-   fi
-
-   # Remove the work files
-   rm $TEMP
-
-   # Remove new line from SELECTED variable
-   SELECTED=$(echo "$SELECTED" | tr '\n' ' ')
-
-   # Generate the zopen remove command
-   REMOVE="zopen remove -y $SELECTED"
-
-   # report what we have generated for the user
-   echo -e "Generated command: \n$REMOVE"
-
-   # If gum confirm Yes then process the next command
-   gum confirm "Execute Generated zopen remove:" && $REMOVE && $MANDB
-   exit 0
-}
-
-#------------------------------#
-# Routine for zopen list       #
-#------------------------------#
-list()
-{
-
-   LIST=$(gum choose "list" "remote-search" "installed" \
-     --header "Select list option" --header.foreground="$COLOR")
-   RC=$?
-
-   # Escape pressed then exit
-   if [ "$RC" -eq 130 ] ; then
-      exit
-   fi
-
-   #-------------------#
-   # update list parm  #
-   #-------------------#
-   FILTER=''
-   case "$LIST" in
-     list)
-     LIST="--list"
-     ;;
-     remote-search)
-     LIST="--remote-search"
-     FILTER=1
-     ;;
-     installed)
-     LIST="--installed"
-     ;;
-   esac
-
-   if [ "$FILTER" == 1 ]; then
-      ARG=$(gum input --prompt "Enter a package name or prefix to search for:" \
-          --placeholder="e.g. ssh" --value=" " --header.foreground="$COLOR")
-     LIST="$LIST $ARG"
-   fi
-
-   # spinning something while we collect the list of all available packages
-   gum spin --title "Generating list results" -s "$SPIN" \
-     --show-output --spinner.foreground="$COLOR" --title.foreground="$COLOR" \
-     -- zopen list "$LIST" -d > "$TEMP"
-   cat "$TEMP" | gum pager
-   rm "$TEMP"
-exit 0
-}
-
-##Start of the working code
-
 #----------------------#
 # Display our banner   #
 #----------------------#
+banner()
+{
+clear
 gum style \
    --foreground $COLOR --border-foreground $COLOR --border double \
    --align center --width 50 --margin "1 2" --padding "2 4" \
@@ -371,3 +207,200 @@ echo 'Here is the help information for the command to help for now:'
 echo ' '
 zopen $ZOT -h
 exit 0
+}
+
+#----------------------------------------------------------#
+# routine for the zopen install option                     #
+#----------------------------------------------------------#
+install()
+{
+
+   # Ask the user if they want to filter the packages
+   FILTER=$(gum input --prompt "Enter text to filter the available packages or blank:" \
+       --placeholder="e.g. ssh" --value=" " --header.foreground="$COLOR")
+   RC=$?
+
+   # Escape pressed, go back to the beginning
+   if [ "$RC" -eq 130 ] ; then
+      banner
+   fi
+
+   # Test if there is a filter and if so then clean up working file
+   if [ ! -z $FILTER ]; then
+      FILTERC="--remote-search $FILTER"
+   else
+      FILTERC=""
+   fi
+
+   # spinning something while we collect the list of all available packages
+   gum spin --title "Generating list of available packages" -s "$SPIN" \
+     --show-output --spinner.foreground="$COLOR" --title.foreground="$COLOR" \
+     -- zopen query --list "$FILTERC" > "$TEMP"
+
+   cat "$TEMP" | grep Not | cut -d " " -f1  > "$TEMPW"
+
+   if [ ! -s "$TEMPW" ]; then
+     echo "No packages found to match $FILTER"
+     rm "$TEMP" "$TEMPW"
+     FILTER=""
+     FILTERC=""
+     install
+   fi
+
+   # Prompt for package selections - any number allowed
+   # but first remove all installed packages and only use
+   # the package name
+   SELECTED=$(cat "$TEMPW" | \
+     gum choose --no-limit \
+     --height=18 \
+     --header "Select packages to install $HEADSEL" --header.foreground="$COLOR")
+   RC=$?
+
+   # Remove the work files
+   rm "$TEMP" "$TEMPW"
+
+   # Escape pressed, go back to the beginning
+   if [ "$RC" -eq 130 ] ; then
+      install
+   fi
+
+   # Test if any packages selected - must have at least one
+   if [ -z "$SELECTED" ]; then
+       echo "No selections - try again. . ."
+       install
+   fi
+   # Remove new line from SELECTED variable
+   SELECTED=$(echo "$SELECTED" | tr '\n' ' ')
+
+   # Generate the zopen install command
+   INSTALL="zopen install -y $SELECTED"
+
+   # report what we have generated for the user
+   echo -e "Generated command: \n$INSTALL"
+
+   # If gum confirm Yes then process the next command
+   gum confirm "Execute Generated zopen install:" && $INSTALL && $MANDB
+   exit 0
+}
+
+#----------------------------------------------------------#
+# routine for the zopen remove option                      #
+#----------------------------------------------------------#
+remove()
+{
+   # spinning something while we collect the list of all available packages
+   gum spin --title "Generating list of all installed packages" -s "$SPIN" \
+     --show-output --spinner.foreground="$COLOR" --title.foreground="$COLOR" \
+     -- zopen query --installed > "$TEMP"
+
+   # Ask the user if they want to filter the packages
+   FILTER=$(gum input --prompt "Enter text to filter the installed packages or blank:" \
+       --placeholder="e.g. ssh" --value=" " --header.foreground="$COLOR")
+
+   # Test if there is a filter and if so then clean up working file the
+   # Prompt for package selections - any number allowed
+   # but first only use the package name
+   if [ ! -z $FILTER ]; then
+      grep -i $FILTER $TEMP > $TEMPW
+      SELECTED=$(cat "$TEMPW"| cut -d " " -f1  | \
+      gum choose --no-limit \
+      --height=18 \
+     --header "Select packages to remove $HEADSEL" --header.foreground="$COLOR")
+   else
+     SELECTED=$(cat "$TEMP"| tail -n +2 | cut -d " " -f1  | \
+        gum choose --no-limit \
+       --header "Select packages to remove $HEADSEL" --header.foreground="$COLOR")
+   fi
+   RC=$?
+
+   # Escape pressed, go back to the beginning
+   if [ "$RC" -eq 130 ] ; then
+      remove
+   fi
+
+   # Test if any packages selected - must have at least one
+   if [ -z "$SELECTED" ]; then
+       echo "No selections - exiting...."
+       banner
+   fi
+
+   # Remove the work files
+   rm $TEMP
+
+   # Remove new line from SELECTED variable
+   SELECTED=$(echo "$SELECTED" | tr '\n' ' ')
+
+   # Generate the zopen remove command
+   REMOVE="zopen remove -y $SELECTED"
+
+   # report what we have generated for the user
+   echo -e "Generated command: \n$REMOVE"
+
+   # If gum confirm Yes then process the next command
+   gum confirm "Execute Generated zopen remove:" && $REMOVE && $MANDB
+   exit 0
+}
+
+#------------------------------#
+# Routine for zopen list       #
+#------------------------------#
+list()
+{
+
+   LIST=$(gum choose "list" "remote-search" "installed" \
+     --header "Select list option" --header.foreground="$COLOR")
+   RC=$?
+
+   # Escape pressed then start over
+   if [ "$RC" -eq 130 ] ; then
+      banner
+   fi
+
+   #-------------------#
+   # update list parm  #
+   #-------------------#
+   FILTER=''
+   case "$LIST" in
+     list)
+     LIST="--list"
+     ;;
+     remote-search)
+     LIST="--remote-search"
+     FILTER=1
+     ;;
+     installed)
+     LIST="--installed"
+     ;;
+   esac
+
+   if [ "$FILTER" == 1 ]; then
+      ARG=$(gum input --prompt "Enter a package name or prefix to search for:" \
+          --placeholder="e.g. ssh" --value=" " --header.foreground="$COLOR")
+     if [ -z "$ARG" ]; then
+        echo "Search required."
+        list
+      fi
+     LIST="$LIST $ARG"
+   fi
+
+   # spinning something while we collect the list of all available packages
+   gum spin --title "Generating list results" -s "$SPIN" \
+     --show-output --spinner.foreground="$COLOR" --title.foreground="$COLOR" \
+     -- zopen list "$LIST" -d > "$TEMP"
+
+   if [ "$FILTER" == 1 ]; then
+      LINES=$(wc -l < "$TEMP")
+      if [ "$LINES" -lt 3 ]; then
+        echo "No packages found for remote-search list."
+        rm "$TEMP"
+        banner
+      fi
+   fi
+   cat "$TEMP" | gum pager
+   rm "$TEMP"
+   banner
+}
+
+##Start of the working code
+
+banner
