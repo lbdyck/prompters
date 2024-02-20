@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-VER='0.09'
+VER='0.10'
 
 #---------------------------------------------------#
 # Name: zothelper                                   #
@@ -16,6 +16,7 @@ VER='0.09'
 #   Igor Todorovski                                 #
 #                                                   #
 # Change History (current on top):                  #
+#   2024/02/20 LBD - 0.10 Update list to remove -d  #
 #   2024/02/18 LBD - 0.09 Major restructure         #
 #   2024/02/17 LBD - 0.08 Support zopen list/query  #
 #   2024/02/12 LBD - 0.07 Don't default clean to all#
@@ -386,7 +387,7 @@ list()
    # spinning something while we collect the list of all available packages
    gum spin --title "Generating list results" -s "$SPIN" \
      --show-output --spinner.foreground="$COLOR" --title.foreground="$COLOR" \
-     -- zopen list "$LIST" -d > "$TEMP"
+     -- zopen list "$LIST" > "$TEMP"
 
    if [ "$FILTER" == 1 ]; then
       LINES=$(wc -l < "$TEMP")
