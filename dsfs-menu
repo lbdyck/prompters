@@ -79,7 +79,7 @@ SEL=$(gum choose "createparm" "fileinfo" "fsinfo" "help" "query" "configquery" "
 case "$SEL" in
   createparm)
     echo "Selected" $SEL
-    UID=$(id -u -n)
+    DUID=$(id -u -n)
     HLQ=$(gum input --header=" HLQ to create - must be at least 2 qualifiers and the 1st must match your userid:" \
         --header.foreground="11" --placeholder="Enter HLQ" )
     if [[ $HLQ != *.* ]]; then
@@ -87,7 +87,7 @@ case "$SEL" in
        exit 0
     fi
     THLQ=$(echo "$HLQ" | tr '[:lower:]' '[:upper:]')
-    if [[ ! "$THLQ" == "$UID"* ]]; then
+    if [[ ! "$THLQ" == "$DUID"* ]]; then
        echo 'HLQ does NOT match your userid as it must - try again.'
        exit 0
     fi
