@@ -1,6 +1,6 @@
 #!/bin/sh
 clear
-VER="0.29"
+VER="0.30"
 
 #----------------------------------------------------------------#
 # Name: mantastic                                                #
@@ -26,6 +26,7 @@ VER="0.29"
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
 #                                                                #
 # Change History (top down):                                     #
+#    2024/05/07 LBD - 0.30 Add --soft-wrap pager option          #
 #    2024/02/16 LBD - 0.29 Change name in banner                 #
 #    2024/02/15 LBD - 0.28 Remove the color option (not needed)  #
 #    2024/02/11 LBD - 0.27 Change prompt to use keyword instead  #
@@ -61,7 +62,7 @@ VER="0.29"
 #----------------------------------------------------------------#
 # Comment and uncomment to define which pager to use for viewing #
 #----------------------------------------------------------------#
-PAGER="gum pager"
+PAGER="gum pager --soft-wrap"
 # PAGER="more"
 # PAGER="less"
 
