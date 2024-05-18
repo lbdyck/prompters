@@ -51,6 +51,14 @@ It may be invoked one of two ways:
 
 **Note** The use of `mandb` to update the man page database is highly (strongly) recommended.
 
+## zoauhelper
+
+This is an initial swag at providing a tool to help with `zoau`. The `zoau` man pages are not
+usable with the z/OS Open Tools version of `man` and are not indexed for the z/OS standard
+`man` command. 
+
+This is an attempt to provide some help.
+
 ## [zothelper](zothelper)
 
 This tools will prompt for one of the available `zopen` options and then construct the 
