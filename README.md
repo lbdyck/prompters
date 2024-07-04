@@ -28,6 +28,7 @@ are welcome to assist/improve.
 1. The use of `more` or `less` are also valid pagers, but the `gum pager` is 
 the preferred viewer.
 2. These are work in progress - improvements welcome.
+3. The use of `gsed` from the z/OS Open Tools is a pre-req just as `gum` is.
 
 ## [dsfs-menu])dsfs-menu)
 
