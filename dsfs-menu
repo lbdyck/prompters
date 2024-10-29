@@ -1,7 +1,7 @@
 #!/bin/env bash
 clear
 
-VER="0.037"
+VER="0.038"
 
 #----------------------------------------------------------------#
 # Name: dsfs-menu                                                #
@@ -18,6 +18,7 @@ VER="0.037"
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
 #                                                                #
 # Change History (top down):                                     #
+#    2024/10/29 LBD - 0.038 Change from z/OS Open Tools to zopen #
 #    2024/07/04 LBD - 0.037 Fix to use gsed                      #
 #    2024/02/02 LBD - 0.036 Add exports for _TAG to fix display  #
 #    2024/02/01 LBD - 0.035 Fix createparm                       #
@@ -65,7 +66,7 @@ COLOR=51
 gum style \
         --foreground $COLOR --border-foreground $COLOR --border double \
         --align center --width 50 --margin "1 2" --padding "2 4" \
-        'z/OS Open Tools dsfs User Menu' $VER
+        'zopen dsfs User Menu' $VER
 
 #----------------------------------------------------------------#
 # Define the gum env variables                                   #
