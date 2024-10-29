@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-VER='0.11'
+VER='0.12'
 
 #---------------------------------------------------#
 # Name: zothelper                                   #
@@ -16,6 +16,7 @@ VER='0.11'
 #   Igor Todorovski                                 #
 #                                                   #
 # Change History (current on top):                  #
+#   2024/10/29 LBD - 0.12 Change to zopen           #
 #   2024/07/04 LBD - 0.11 Use gsed instead of sed   #
 #   2024/02/20 LBD - 0.10 Update list to remove -d  #
 #   2024/02/18 LBD - 0.09 Major restructure         #
@@ -110,7 +111,7 @@ clear
 gum style \
    --foreground $COLOR --border-foreground $COLOR --border double \
    --align center --width 50 --margin "1 2" --padding "2 4" \
-   'z/OS Open Tools Helper' $VER
+   'zopen Helper' $VER
 
 #----------------------------------------------------------#
 # Prompt the user for the zopen options                    #
