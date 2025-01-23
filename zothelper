@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-VER='0.12'
+VER='0.13'
 
 #---------------------------------------------------#
 # Name: zothelper                                   #
@@ -16,6 +16,7 @@ VER='0.12'
 #   Igor Todorovski                                 #
 #                                                   #
 # Change History (current on top):                  #
+#   2025/01/23 LBD - 0.13 Add support for info      #
 #   2024/10/29 LBD - 0.12 Change to zopen           #
 #   2024/07/04 LBD - 0.11 Use gsed instead of sed   #
 #   2024/02/20 LBD - 0.10 Update list to remove -d  #
@@ -165,6 +166,13 @@ case "$ZOT" in
   install )
    install
    ;;
+
+#----------------------------------------------------------#
+# Info - display information about installed package       #
+#----------------------------------------------------------#
+  info   )
+  info
+  ;;
 
 #----------------------------------------------------------#
 # Remove any installed packages                            #
@@ -342,6 +350,61 @@ remove()
    # If gum confirm Yes then process the next command
    gum confirm "Execute Generated zopen remove:" && $REMOVE && $MANDB
    exit 0
+}
+
+#----------------------------------------------------------#
+# routine for the zopen info option                        #
+#----------------------------------------------------------#
+info()
+{
+   # spinning something while we collect the list of all available packages
+   gum spin --title "Generating list of all installed packages" -s "$SPIN" \
+     --show-output --spinner.foreground="$COLOR" --title.foreground="$COLOR" \
+     -- zopen query --installed > "$TEMP"
+
+   # Ask the user if they want to filter the packages
+   FILTER=$(gum input --prompt "Enter text to filter the installed packages or blank:" \
+       --placeholder="e.g. ssh" --value=" " --header.foreground="$COLOR")
+
+   # Test if there is a filter and if so then clean up working file the
+   # Prompt for package selections - any number allowed
+   # but first only use the package name
+   if [ ! -z $FILTER ]; then
+      grep -i $FILTER $TEMP > $TEMPW
+      SELECTED=$(cat "$TEMPW"| cut -d " " -f1  | \
+      gum choose --no-limit \
+      --height=18 \
+     --header "Select packages for INFO $HEADSEL" --header.foreground="$COLOR")
+   else
+     SELECTED=$(cat "$TEMP"| tail -n +2 | cut -d " " -f1  | \
+        gum choose --no-limit \
+       --header "Select packages for INFO $HEADSEL" --header.foreground="$COLOR")
+   fi
+   RC=$?
+
+   # Escape pressed, go back to the beginning
+   if [ "$RC" -eq 130 ] ; then
+      info
+   fi
+
+   # Test if any packages selected - must have at least one
+   if [ -z "$SELECTED" ]; then
+       echo "No selections - exiting...."
+       banner
+   fi
+
+   # Remove new line from SELECTED variable
+   SELECTED=$(echo "$SELECTED" | tr '\n' ' ')
+
+   # Generate the zopen info command
+   INFO="zopen info $SELECTED"
+
+   # report what we have generated for the user
+   echo -e "Generated command: \n$INFO"
+
+   $INFO | gum pager
+
+   banner
 }
 
 #------------------------------#
