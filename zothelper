@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-VER='0.13'
+VER='0.14'
 
 #---------------------------------------------------#
 # Name: zothelper                                   #
@@ -16,6 +16,7 @@ VER='0.13'
 #   Igor Todorovski                                 #
 #                                                   #
 # Change History (current on top):                  #
+#   2025/01/23 LBD - 0.14 Sort zopen options        #
 #   2025/01/23 LBD - 0.13 Add support for info      #
 #   2024/10/29 LBD - 0.12 Change to zopen           #
 #   2024/07/04 LBD - 0.11 Use gsed instead of sed   #
@@ -118,6 +119,7 @@ gum style \
 # Prompt the user for the zopen options                    #
 #----------------------------------------------------------#
 ZOT=$(zopen help | gsed -n '/Command:/,/Options:/ {//!p}' | \
+    sort | \
     gum choose --header.foreground="$COLOR" \
     --height=18 \
     --header "Select zopen command $HEADSEL")
