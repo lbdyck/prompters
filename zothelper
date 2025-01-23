@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-VER='0.14'
+VER='0.15'
 
 #---------------------------------------------------#
 # Name: zothelper                                   #
@@ -16,6 +16,7 @@ VER='0.14'
 #   Igor Todorovski                                 #
 #                                                   #
 # Change History (current on top):                  #
+#   2025/01/23 LBD - 0.15 Support zopen generate    #
 #   2025/01/23 LBD - 0.14 Sort zopen options        #
 #   2025/01/23 LBD - 0.13 Add support for info      #
 #   2024/10/29 LBD - 0.12 Change to zopen           #
@@ -163,6 +164,17 @@ case "$ZOT" in
     ;;
 
 #----------------------------------------------------------#
+# generate a new zopen project                             #
+#----------------------------------------------------------#
+   generate )
+   zopen generate
+   gum input --placeholder "Generate complete. Press Enter to continue." \
+             --cursor.foreground "#FF0" \
+             --prompt.foreground "#0FF"
+   banner
+   ;;
+
+#----------------------------------------------------------#
 # install available packages                               #
 #----------------------------------------------------------#
   install )
@@ -196,6 +208,7 @@ case "$ZOT" in
   query )
   list
   ;;
+
 
 #----------------------------------------------------------#
 # Upgrade any installed packages                           #
