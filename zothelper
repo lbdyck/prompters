@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-VER='0.15'
+VER='0.16'
 
 #---------------------------------------------------#
 # Name: zothelper                                   #
@@ -16,6 +16,7 @@ VER='0.15'
 #   Igor Todorovski                                 #
 #                                                   #
 # Change History (current on top):                  #
+#   2025/01/24 LBD - 0.16 Remove blank selection    #
 #   2025/01/23 LBD - 0.15 Support zopen generate    #
 #   2025/01/23 LBD - 0.14 Sort zopen options        #
 #   2025/01/23 LBD - 0.13 Add support for info      #
@@ -37,7 +38,7 @@ VER='0.15'
 #---------------------------------------------------#
 # Repository: github.com/lbdyck/prompters           #
 #---------------------------------------------------#
-# Copyleft by Lionel B. Dyck 2024                   #
+# Copyleft by Lionel B. Dyck 2024-2025              #
 #---------------------------------------------------#
 
 #----------------------------------------------------------------#
@@ -120,6 +121,7 @@ gum style \
 # Prompt the user for the zopen options                    #
 #----------------------------------------------------------#
 ZOT=$(zopen help | gsed -n '/Command:/,/Options:/ {//!p}' | \
+    sed '$d' | \
     sort | \
     gum choose --header.foreground="$COLOR" \
     --height=18 \
