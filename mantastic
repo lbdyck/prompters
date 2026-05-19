@@ -1,6 +1,6 @@
 #!/bin/sh
 clear
-VER="0.30"
+VER="0.31"
 
 #----------------------------------------------------------------#
 # Name: mantastic                                                #
@@ -26,6 +26,7 @@ VER="0.30"
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
 #                                                                #
 # Change History (top down):                                     #
+#    2026-05-19 LBD - 0.31 Use zotman if available               #
 #    2024/05/07 LBD - 0.30 Add --soft-wrap pager option          #
 #    2024/02/16 LBD - 0.29 Change name in banner                 #
 #    2024/02/15 LBD - 0.28 Remove the color option (not needed)  #
@@ -95,6 +96,15 @@ export _TAG_REDIR_OUT=txt
 export _TAG_REDIR_ERR=txt
 
 #----------------------------------------------------------------#
+# Check if the zopen zotman is installed and use if found        #
+#----------------------------------------------------------------#
+if command -v zotman >/dev/null 2>&1; then
+    mancmd="zotman"
+else
+    mancmd="man"
+fi
+
+#----------------------------------------------------------------#
 # Display normal banner unless -h or -help                       #
 #----------------------------------------------------------------#
  if [ "$1" != "-help" -a "$1" != "-h" -a "$1" != "?" ]; then
@@ -152,7 +162,7 @@ fi
 #----------------------------------------------------------------#
 if [ "$2" != "-d" ]; then
   if [ -n "$ARG" ]; then
-     MAN=$(gum choose $(man -k $ARG | cut -d" " -f1 | tail -n +1) \
+     MAN=$(gum choose $(man -k $ARG | cut -d" " -f1 | tr -d ':' |tail -n +1) \
        --header "Select Man Page to View" --header.foreground="11")
      MAN=$(echo $MAN | cut -d" " -f1)
   else
@@ -168,5 +178,5 @@ fi
 if [ -z "$MAN" ]; then
    echo 'No Selection.'
    else
-      man $MAN | $PAGER
+      $mancmd $MAN | $PAGER
 fi
