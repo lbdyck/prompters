@@ -1,6 +1,6 @@
 #!/bin/sh
 clear
-VER="0.31"
+VER="0.33"
 
 #----------------------------------------------------------------#
 # Name: mantastic                                                #
@@ -26,6 +26,7 @@ VER="0.31"
 #   Lionel B. Dyck (lbdyck@gmail.com)                            #
 #                                                                #
 # Change History (top down):                                     #
+#    2026-05-20 LBD - 0.32 Correct -k man to use zotman or man   #
 #    2026-05-19 LBD - 0.31 Use zotman if available               #
 #    2024/05/07 LBD - 0.30 Add --soft-wrap pager option          #
 #    2024/02/16 LBD - 0.29 Change name in banner                 #
@@ -162,7 +163,7 @@ fi
 #----------------------------------------------------------------#
 if [ "$2" != "-d" ]; then
   if [ -n "$ARG" ]; then
-     MAN=$(gum choose $(man -k $ARG | cut -d" " -f1 | tr -d ':' |tail -n +1) \
+     MAN=$(gum choose $($mancmd -k $ARG | cut -d" " -f1 | tr -d ':' |tail -n +1) \
        --header "Select Man Page to View" --header.foreground="11")
      MAN=$(echo $MAN | cut -d" " -f1)
   else
